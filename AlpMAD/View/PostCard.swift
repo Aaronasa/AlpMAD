@@ -62,7 +62,7 @@ struct PostCard: View {
                 }) {
                     HStack(spacing: 4) {
                         Image(systemName: isLiked ? "heart.fill" : "heart")
-                            .foregroundColor(isLiked ? .red : .blue)
+                            .foregroundColor(isLiked ? .red : .red)
                         Text("\(likeCount)")
                             .foregroundColor(.secondary)
                     }

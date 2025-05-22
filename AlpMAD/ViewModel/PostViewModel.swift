@@ -42,7 +42,6 @@ class PostViewModel: ObservableObject {
     init() {
         self.ref = Database.database().reference().child("posts")
         fetchAllPosts()
-        fetchUserPosts()
     }
     
     private func tokenize(_ text: String) -> MLMultiArray? {
@@ -174,7 +173,6 @@ class PostViewModel: ObservableObject {
     }
     
     func updatePost(_ post: Post) -> Bool {
-        // Check for bad words in updated content
         if containsBadWords(post.content) {
             postError = "Update ditolak karena mengandung kata-kata yang tidak pantas"
             return false
