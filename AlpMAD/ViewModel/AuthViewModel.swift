@@ -119,48 +119,45 @@ class AuthViewModel: ObservableObject {
         }
     }
 
-    func updateUser(age: Int) async {
-        guard let uid = self.userId else { return }
-
+    func updateUser(email: String? = nil, password: String? = nil, age: Int? = nil) async {
+        guard let user = Auth.auth().currentUser, let uid = self.userId else { return }
+        
         do {
-            try await dbRef.child("users").child(uid).updateChildValues(["age": age])
-            await MainActor.run {
-                self.myUser.age = age
+            var updates: [String: Any] = [:]
+            
+            // Update email if provided
+            if let newEmail = email {
+                try await user.updateEmail(to: newEmail)
+                updates["email"] = newEmail
+                await MainActor.run {
+                    self.myUser.email = newEmail
+                }
             }
+            
+            // Update password if provided
+            if let newPassword = password {
+                try await user.updatePassword(to: newPassword)
+                updates["password"] = newPassword
+                await MainActor.run {
+                    self.myUser.password = newPassword
+                }
+            }
+            
+            // Update age if provided
+            if let newAge = age {
+                updates["age"] = newAge
+                await MainActor.run {
+                    self.myUser.age = newAge
+                }
+            }
+            
+            // Update Firebase Database with all changes
+            if !updates.isEmpty {
+                try await dbRef.child("users").child(uid).updateChildValues(updates)
+            }
+            
         } catch {
             print("Update error: \(error.localizedDescription)")
-        }
-    }
-    
-    func updateEmail(email: String) async {
-        guard let user = Auth.auth().currentUser, let uid = self.userId else { return }
-        
-        do {
-            // Update in Firebase Database
-            try await dbRef.child("users").child(uid).updateChildValues(["email": email])
-            
-            // Update local state
-            await MainActor.run {
-                self.myUser.email = email
-            }
-        } catch {
-            print("Email update error: \(error.localizedDescription)")
-        }
-    }
-
-    func updatePassword(password: String) async {
-        guard let user = Auth.auth().currentUser, let uid = self.userId else { return }
-        
-        do {
-            // Update in Firebase Database
-            try await dbRef.child("users").child(uid).updateChildValues(["password": password])
-            
-            // Update local state
-            await MainActor.run {
-                self.myUser.password = password
-            }
-        } catch {
-            print("Password update error: \(error.localizedDescription)")
         }
     }
 

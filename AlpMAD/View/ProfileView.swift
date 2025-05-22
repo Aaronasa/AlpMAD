@@ -1,3 +1,4 @@
+
 //
 //  ProfileView.swift
 //  AlpMAD
@@ -8,170 +9,150 @@ import SwiftUI
 
 struct ProfileView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
-    @State private var newAge: String = ""
-    @State private var newEmail: String = ""
-    @State private var newPassword: String = ""
-    @State private var confirmPassword: String = ""
-    @State private var selectedUpdate: UpdateType = .age
-    @State private var showingUpdateAlert = false
+    @State private var editableEmail: String = ""
+    @State private var editablePassword: String = ""
+    @State private var editableAge: String = ""
     @State private var showingDeleteAlert = false
-    @State private var showingUpdateSuccess = false
-    @State private var updateMessage: String = ""
+    @State private var showingSaveAlert = false
+    @State private var saveMessage: String = ""
+    @State private var isPasswordVisible = false
+    @State private var selectedTab: UpdateType = .edit
+    @Environment(\.presentationMode) var presentationMode
     
     enum UpdateType {
-        case age, email, password
+        case edit, post, reply
     }
     
-    // Colors
-    let textColor = Color(red: 45/255, green: 55/255, blue: 72/255)
+    let backgroundColor = Color(UIColor.systemBackground)
     let primaryBlue = Color(red: 74/255, green: 144/255, blue: 226/255)
-    let backgroundColor = Color(red: 244/255, green: 246/255, blue: 249/255)
+    let textColor = Color.primary
+    let secondaryTextColor = Color.secondary
     
     var body: some View {
         NavigationView {
             ZStack {
                 backgroundColor.edgesIgnoringSafeArea(.all)
                 
-                VStack(spacing: 20) {
-                    // Profile Header
-                    VStack(spacing: 8) {
-                        Image(systemName: "person.circle.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 100, height: 100)
-                            .foregroundColor(primaryBlue)
-                            .padding(.bottom, 10)
-                        
-                        Text(authViewModel.myUser.email)
-                            .font(.title2)
+                VStack(spacing: 0) {
+                    VStack(spacing: 16) {
+                        Text("Anonymous")
+                            .padding(.leading, -180)
+                            .font(.title)
                             .fontWeight(.bold)
                             .foregroundColor(textColor)
-                        
-                        Text("Age: \(authViewModel.myUser.age)")
-                            .font(.headline)
-                            .foregroundColor(textColor.opacity(0.8))
-                    }
-                    .padding()
-                    .background(Color.white)
-                    .cornerRadius(15)
-                    .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
-                    .padding(.horizontal)
-                    
-                    // Update Profile Section
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Update Profile")
-                            .font(.headline)
+
+                        // Tab-like buttons
+                        HStack(spacing: 0) {
+                            Button("Edit Profile") {
+                                // Already in edit mode
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(primaryBlue)
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
+                            
+                            Button("Posts") {
+                                // Posts action
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(Color(UIColor.systemGray5))
                             .foregroundColor(textColor)
+                            
+                            Button("Replies") {
+                                // Replies action
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(Color(UIColor.systemGray5))
+                            .foregroundColor(textColor)
+                        }
+                        .cornerRadius(8)
+                        .padding(.horizontal)
                         
-                        Picker("Update Type", selection: $selectedUpdate) {
-                            Text("Age").tag(UpdateType.age)
-                            Text("Email").tag(UpdateType.email)
-                            Text("Password").tag(UpdateType.password)
+                        Picker("Update Type", selection: $selectedTab) {
+                            Text("Edit Profile").tag(UpdateType.edit)
+                            Text("Posts").tag(UpdateType.post)
+                            Text("Replies").tag(UpdateType.reply)
                         }
                         .pickerStyle(SegmentedPickerStyle())
-                        .padding(.bottom, 10)
+                        .padding()
+                    }
+                    .padding(.top, 20)
+                    .padding(.bottom, 30)
+                    
+                    // Form Section
+                    VStack(alignment: .leading, spacing: 24) {
+                        // Email Field
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Email")
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(textColor)
+                            TextField(authViewModel.myUser.email, text: $editableEmail)
+                                .keyboardType(.numberPad)
+                                .padding()
+                                .background(Color.white)
+                                .cornerRadius(10)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(primaryBlue.opacity(0.5), lineWidth: 1)
+                                )
+                        }
                         
-                        if selectedUpdate == .age {
-                            HStack {
-                                TextField("New Age", text: $newAge)
-                                    .keyboardType(.numberPad)
-                                    .padding()
-                                    .background(Color.white)
-                                    .cornerRadius(10)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .stroke(primaryBlue.opacity(0.5), lineWidth: 1)
-                                    )
-                                
-                                Button(action: {
-                                    selectedUpdate = .age
-                                    showingUpdateAlert = true
-                                }) {
-                                    Text("Update")
-                                        .fontWeight(.semibold)
-                                        .padding(.horizontal, 20)
-                                        .padding(.vertical, 12)
-                                        .background(primaryBlue)
-                                        .foregroundColor(.white)
-                                        .cornerRadius(10)
-                                }
+                        // Password Field
+                        Text("Password")
+                            .padding(.bottom, -15)
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(textColor)
+                        HStack {
+                            if isPasswordVisible {
+                                TextField(authViewModel.myUser.password, text: $editablePassword)
+                            } else {
+                                SecureField("Password", text: $editablePassword)
                             }
-                        } else if selectedUpdate == .email {
-                            VStack(spacing: 10) {
-                                TextField("New Email", text: $newEmail)
-                                    .keyboardType(.emailAddress)
-                                    .autocapitalization(.none)
-                                    .padding()
-                                    .background(Color.white)
-                                    .cornerRadius(10)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .stroke(primaryBlue.opacity(0.5), lineWidth: 1)
-                                    )
-                                
-                                Button(action: {
-                                    selectedUpdate = .email
-                                    showingUpdateAlert = true
-                                }) {
-                                    Text("Update Email")
-                                        .fontWeight(.semibold)
-                                        .frame(maxWidth: .infinity)
-                                        .padding(.vertical, 12)
-                                        .background(primaryBlue)
-                                        .foregroundColor(.white)
-                                        .cornerRadius(10)
-                                }
-                            }
-                        } else {
-                            VStack(spacing: 10) {
-                                SecureField("New Password", text: $newPassword)
-                                    .padding()
-                                    .background(Color.white)
-                                    .cornerRadius(10)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .stroke(primaryBlue.opacity(0.5), lineWidth: 1)
-                                    )
-                                
-                                SecureField("Confirm Password", text: $confirmPassword)
-                                    .padding()
-                                    .background(Color.white)
-                                    .cornerRadius(10)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .stroke(primaryBlue.opacity(0.5), lineWidth: 1)
-                                    )
-                                
-                                Button(action: {
-                                    if newPassword == confirmPassword && !newPassword.isEmpty {
-                                        selectedUpdate = .password
-                                        showingUpdateAlert = true
-                                    } else {
-                                        updateMessage = "Passwords don't match or are empty"
-                                        showingUpdateSuccess = true
-                                    }
-                                }) {
-                                    Text("Update Password")
-                                        .fontWeight(.semibold)
-                                        .frame(maxWidth: .infinity)
-                                        .padding(.vertical, 12)
-                                        .background(primaryBlue)
-                                        .foregroundColor(.white)
-                                        .cornerRadius(10)
-                                }
+                            
+                            Button(action: {
+                                isPasswordVisible.toggle()
+                            }) {
+                                Image(systemName: isPasswordVisible ? "eye.slash.fill" : "eye.fill")
+                                    .foregroundColor(primaryBlue)
                             }
                         }
+                        .padding()
+                        .background(Color.white)
+                        .cornerRadius(8)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(primaryBlue, lineWidth: 1)
+                        )
+                        
+                        // Age Field
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Age")
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(textColor)
+                            TextField("New Age", text: $editableAge)
+                                .keyboardType(.numberPad)
+                                .padding()
+                                .background(Color.white)
+                                .cornerRadius(10)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(primaryBlue.opacity(0.5), lineWidth: 1)
+                                )
+                        }
                     }
-                    .padding()
-                    .background(Color.white)
-                    .cornerRadius(15)
-                    .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 2)
-                    .padding(.horizontal)
+                    .padding(.horizontal, 20)
                     
                     Spacer()
                     
                     // Action Buttons
-                    VStack(spacing: 15) {
+                    VStack(spacing: 12) {
+                        // Sign Out Button
                         Button(action: {
                             Task {
                                 authViewModel.signOut()
@@ -179,79 +160,54 @@ struct ProfileView: View {
                         }) {
                             HStack {
                                 Image(systemName: "rectangle.portrait.and.arrow.right")
+                                    .font(.system(size: 16, weight: .medium))
                                 Text("Sign Out")
-                                    .fontWeight(.semibold)
+                                    .font(.system(size: 16, weight: .semibold))
                             }
                             .frame(maxWidth: .infinity)
-                            .padding()
+                            .padding(.vertical, 16)
                             .background(primaryBlue)
                             .foregroundColor(.white)
-                            .cornerRadius(10)
+                            .cornerRadius(12)
                         }
                         
+                        // Delete Account Button
                         Button(action: {
                             showingDeleteAlert = true
                         }) {
                             HStack {
                                 Image(systemName: "trash")
+                                    .font(.system(size: 16, weight: .medium))
                                 Text("Delete Account")
-                                    .fontWeight(.semibold)
+                                    .font(.system(size: 16, weight: .semibold))
                             }
                             .frame(maxWidth: .infinity)
-                            .padding()
+                            .padding(.vertical, 16)
                             .background(Color.red)
                             .foregroundColor(.white)
-                            .cornerRadius(10)
+                            .cornerRadius(12)
                         }
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 30)
                 }
-                .padding(.vertical)
             }
             .navigationTitle("Profile")
             .navigationBarTitleDisplayMode(.inline)
-            .alert("Update Profile", isPresented: $showingUpdateAlert) {
-                Button("Cancel", role: .cancel) { }
-                Button("Update") {
-                    Task {
-                        switch selectedUpdate {
-                        case .age:
-                            if let age = Int(newAge) {
-                                await authViewModel.updateUser(age: age)
-                                updateMessage = "Your age has been updated successfully!"
-                                newAge = ""
-                            }
-                        case .email:
-                            if !newEmail.isEmpty {
-                                await authViewModel.updateEmail(email: newEmail)
-                                updateMessage = "Your email has been updated successfully!"
-                                newEmail = ""
-                            }
-                        case .password:
-                            if !newPassword.isEmpty && newPassword == confirmPassword {
-                                await authViewModel.updatePassword(password: newPassword)
-                                updateMessage = "Your password has been updated successfully!"
-                                newPassword = ""
-                                confirmPassword = ""
-                            }
-                        }
-                        showingUpdateSuccess = true
+            .navigationBarBackButtonHidden(false)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Save") {
+                        saveProfile()
                     }
-                }
-            } message: {
-                switch selectedUpdate {
-                case .age:
-                    Text("Are you sure you want to update your age to \(newAge)?")
-                case .email:
-                    Text("Are you sure you want to update your email to \(newEmail)?")
-                case .password:
-                    Text("Are you sure you want to update your password?")
+                    .foregroundColor(primaryBlue)
+                    .font(.system(size: 16, weight: .medium))
                 }
             }
-            .alert("Profile Update", isPresented: $showingUpdateSuccess) {
+            .alert("Save Changes", isPresented: $showingSaveAlert) {
                 Button("OK", role: .cancel) { }
             } message: {
-                Text(updateMessage)
+                Text(saveMessage)
             }
             .alert("Delete Account", isPresented: $showingDeleteAlert) {
                 Button("Cancel", role: .cancel) { }
@@ -263,6 +219,57 @@ struct ProfileView: View {
             } message: {
                 Text("Are you sure you want to delete your account? This action cannot be undone.")
             }
+            .onAppear {
+                loadCurrentUserData()
+            }
+        }
+    }
+    
+    private func loadCurrentUserData() {
+        editableEmail = authViewModel.myUser.email
+        editablePassword = authViewModel.myUser.password
+        editableAge = String(authViewModel.myUser.age)
+    }
+    
+    private func saveProfile() {
+        Task {
+            var emailToUpdate: String? = nil
+            var passwordToUpdate: String? = nil
+            var ageToUpdate: Int? = nil
+            var messages: [String] = []
+            
+            if editableEmail != authViewModel.myUser.email && !editableEmail.isEmpty {
+                emailToUpdate = editableEmail
+                messages.append("Email updated")
+            }
+            
+            if editablePassword != authViewModel.myUser.password && !editablePassword.isEmpty {
+                passwordToUpdate = editablePassword
+                messages.append("Password updated")
+            }
+            
+            if let newAge = Int(editableAge), newAge != authViewModel.myUser.age {
+                ageToUpdate = newAge
+                messages.append("Age updated")
+            }
+            
+            if emailToUpdate != nil || passwordToUpdate != nil || ageToUpdate != nil {
+                await authViewModel.updateUser(
+                    email: emailToUpdate,
+                    password: passwordToUpdate,
+                    age: ageToUpdate
+                )
+                
+                await MainActor.run {
+                    saveMessage = messages.joined(separator: ", ") + " successfully!"
+                    showingSaveAlert = true
+                }
+            } else {
+                await MainActor.run {
+                    saveMessage = "No changes detected."
+                    showingSaveAlert = true
+                }
+            }
         }
     }
 }
@@ -273,3 +280,4 @@ struct ProfileView_Previews: PreviewProvider {
             .environmentObject(AuthViewModel())
     }
 }
+
