@@ -97,7 +97,7 @@ struct PostCard: View {
         content: "Example post content",
         timestamp: Date(),
         commentCount: 0, likeCount: 3,
-        likedByCurrentUser: false,
+        likedByCurrentUser: false
     ))
     .environmentObject(PostViewModel())
 }
