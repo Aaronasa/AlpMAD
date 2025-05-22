@@ -14,6 +14,7 @@ struct ConfesView: View {
     let primaryBlue = Color(red: 74/255, green: 144/255, blue: 226/255)
 
     @EnvironmentObject var postViewModel: PostViewModel
+    @EnvironmentObject var replyViewModel: ReplyViewModel
     
     var body: some View {
         VStack {
@@ -112,4 +113,5 @@ struct ConfesView: View {
 #Preview {
     ConfesView()
         .environmentObject(PostViewModel())
+        .environmentObject(ReplyViewModel())
 }

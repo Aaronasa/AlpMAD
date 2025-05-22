@@ -10,10 +10,12 @@ import SwiftUI
 struct PostCard: View {
     let post: Post
     @EnvironmentObject var postViewModel: PostViewModel
-
+    @EnvironmentObject var replyViewModel: ReplyViewModel
+    
     @State private var isLiked: Bool
     @State private var likeCount: Int
-
+    @State private var showReplySheet = false
+    
     init(post: Post) {
         self.post = post
         _isLiked = State(initialValue: post.likedByCurrentUser ?? false)
@@ -41,6 +43,7 @@ struct PostCard: View {
             HStack(spacing: 20) {
                 Button(action: {
                     // reply logic (if needed)
+                    showReplySheet = true
                 }) {
                     HStack(spacing: 4) {
                         Image(systemName: "arrowshape.turn.up.left")
@@ -48,7 +51,11 @@ struct PostCard: View {
                         Text("\(post.commentCount)")
                             .foregroundColor(.secondary)
                     }
+                    
                 }
+                .sheet(isPresented: $showReplySheet) {
+                                   ReplyView(viewModel: replyViewModel, postId: post.id)
+                               }
 
                 Button(action: {
                     if isLiked {
@@ -100,4 +107,5 @@ struct PostCard: View {
         likedByCurrentUser: false,
     ))
     .environmentObject(PostViewModel())
+    .environmentObject(ReplyViewModel())
 }
