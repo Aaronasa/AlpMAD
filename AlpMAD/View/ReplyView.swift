@@ -6,6 +6,10 @@ struct ReplyView: View {
 
     var body: some View {
         VStack {
+            RoundedRectangle(cornerRadius: 3.5)
+                .frame(width: 75, height: 7)
+                .foregroundColor(Color(red: 74/255, green: 144/255, blue: 226/255))
+                .padding(.top, 10)
             Text("Replies")
                 .font(.headline)
                 .padding(10)
@@ -63,7 +67,11 @@ struct ReplyView: View {
                     .padding()
                     .background(Color.white)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray.opacity(0)))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8).stroke(
+                            Color.gray.opacity(0)
+                        )
+                    )
                     .padding(.horizontal)
                 }
 
@@ -71,15 +79,23 @@ struct ReplyView: View {
                     Spacer()
                     Text("\(viewModel.newReplyText.count) / 500")
                         .font(.caption)
-                        .foregroundColor(viewModel.newReplyText.count == 500 ? .red : .gray)
+                        .foregroundColor(
+                            viewModel.newReplyText.count == 500 ? .red : .gray
+                        )
 
                     Button("Post") {
                         viewModel.postReply(to: postId)
                     }
-                    .disabled(viewModel.newReplyText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    .disabled(
+                        viewModel.newReplyText.trimmingCharacters(
+                            in: .whitespacesAndNewlines
+                        ).isEmpty
+                    )
                     .padding(.horizontal, 12)
                     .padding(.vertical, 10)
-                    .background(Color(red: 74/255, green: 144/255, blue: 226/255))
+                    .background(
+                        Color(red: 74 / 255, green: 144 / 255, blue: 226 / 255)
+                    )
                     .foregroundColor(.white)
                     .cornerRadius(8)
                     .shadow(radius: 2)
