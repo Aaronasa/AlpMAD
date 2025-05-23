@@ -4,13 +4,11 @@
 //
 //  Created by student on 22/05/25.
 //
-
 import Foundation
 import FirebaseDatabase
 import Combine
 import CoreML
 
-// Shared vocabulary and bad word list
 let replyVocabulary: [String: Int] = [
     "saya": 1,
     "senang": 2,
@@ -22,7 +20,6 @@ let replyVocabulary: [String: Int] = [
     "buruk": 8,
     "cinta": 9,
     "benci": 10,
-    // Tambahkan lebih banyak jika perlu
 ]
 
 let replyBadWords: Set<String> = [
@@ -37,9 +34,9 @@ class ReplyViewModel: ObservableObject {
     private var dbRef = Database.database().reference()
     private let sentimentModel = try? SentimentAnalysis(configuration: MLModelConfiguration())
 
-    // MARK: - Fetch
+    // MARK: - Fetch Replies
     func fetchReplies(for postId: String) {
-        dbRef.child("replies").child(postId).observe(.value) { snapshot in
+        dbRef.child("replies").child(postId).observe(.value) { [weak self] snapshot in
             var loadedReplies: [Reply] = []
             for child in snapshot.children {
                 if let snap = child as? DataSnapshot,
@@ -50,12 +47,12 @@ class ReplyViewModel: ObservableObject {
             }
 
             DispatchQueue.main.async {
-                self.replies = loadedReplies.sorted { $0.timestamp > $1.timestamp }
+                self?.replies = loadedReplies.sorted { $0.timestamp > $1.timestamp }
             }
         }
     }
 
-    // MARK: - Post
+    // MARK: - Post Reply dengan Auto Update Comment Count
     func postReply(to postId: String) {
         let trimmed = newReplyText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
@@ -68,25 +65,53 @@ class ReplyViewModel: ObservableObject {
 
         // 2. Analisis sentimen
         guard let score = analyzeSentimentScore(for: trimmed), score >= 0.3 else {
-            replyError = "The reply content is too negative. Score:\(analyzeSentimentScore(for: trimmed) ?? 0)"
+            replyError = "The reply content is too negative. Score: \(analyzeSentimentScore(for: trimmed) ?? 0)"
             return
         }
 
         // 3. Simpan balasan
         let reply = Reply(postId: postId, content: trimmed, timestamp: Date())
         let replyRef = dbRef.child("replies").child(postId).child(reply.id)
-        replyRef.setValue(reply.toDict)
-
-        newReplyText = ""
-        replyError = nil
+        
+        replyRef.setValue(reply.toDict) { [weak self] error, _ in
+            if error == nil {
+                // Auto-update comment count setelah reply berhasil disimpan
+                self?.updatePostCommentCount(for: postId)
+                
+                DispatchQueue.main.async {
+                    self?.newReplyText = ""
+                    self?.replyError = nil
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self?.replyError = "Failed to post reply: \(error?.localizedDescription ?? "Unknown error")"
+                }
+            }
+        }
+    }
+    
+    // MARK: - Update Post Comment Count
+    private func updatePostCommentCount(for postId: String) {
+        // Count actual replies in database
+        dbRef.child("replies").child(postId).observeSingleEvent(of: .value) { [weak self] snapshot in
+            let actualCount = Int(snapshot.childrenCount)
+            
+            // Update post's comment count to match actual replies
+            self?.dbRef.child("posts").child(postId).child("commentCount").setValue(actualCount)
+        }
+    }
+    
+    // MARK: - Manual Sync (untuk debugging/maintenance)
+    func syncCommentCount(for postId: String) {
+        updatePostCommentCount(for: postId)
     }
 
+    // MARK: - Helper Methods
     func replies(for postId: String) -> [Reply] {
-        replies.filter { $0.postId == postId }
+        return replies.filter { $0.postId == postId }
     }
 
     // MARK: - NLP Filtering
-
     private func containsBadWords(_ text: String) -> Bool {
         let words = text.lowercased().split(separator: " ").map { String($0) }
         for word in words {
@@ -126,8 +151,18 @@ class ReplyViewModel: ObservableObject {
         }
         return output.Identity[0].floatValue
     }
+    
+    // MARK: - Delete Reply
+    func deleteReply(_ reply: Reply) {
+        let replyRef = dbRef.child("replies").child(reply.postId).child(reply.id)
+        replyRef.removeValue { [weak self] error, _ in
+            if error == nil {
+                // Update comment count after deletion
+                self?.updatePostCommentCount(for: reply.postId)
+            }
+        }
+    }
 }
-
 
 extension Date {
     func timeAgoDisplay() -> String {
@@ -136,4 +171,3 @@ extension Date {
         return formatter.localizedString(for: self, relativeTo: Date())
     }
 }
-

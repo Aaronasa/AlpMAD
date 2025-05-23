@@ -8,6 +8,7 @@ import SwiftUI
 
 struct ConfesView: View {
     @State private var postText: String = ""
+    @State private var showProfile = false
     let maxCharacters = 1000
     
     let softBlue = Color(red: 160/255, green: 210/255, blue: 235/255)
@@ -15,6 +16,7 @@ struct ConfesView: View {
 
     @EnvironmentObject var postViewModel: PostViewModel
     @EnvironmentObject var replyViewModel: ReplyViewModel
+    @EnvironmentObject var authViewModel: AuthViewModel
     
     var body: some View {
         VStack {
@@ -31,10 +33,15 @@ struct ConfesView: View {
                     .font(.system(size: 24))
                     .foregroundColor(.blue)
                     .padding(.trailing, 10)
-                Image(systemName: "person")
-                    .font(.system(size: 24))
-                    .foregroundColor(.blue)
-                    .padding(.trailing, 16)
+                NavigationLink(destination:ProfileView().environmentObject(authViewModel), isActive: $showProfile) {
+                    Image(systemName: "person")
+                        .font(.system(size: 24))
+                        .foregroundColor(.blue)
+                        .padding(.trailing, 16)
+                        .onTapGesture {
+                            showProfile = true
+                        }
+                }
             }
             .padding(.top)
 
@@ -65,7 +72,6 @@ struct ConfesView: View {
                     VStack(alignment: .trailing) {
                         Text("\(postText.count) / \(maxCharacters)")
                             .foregroundColor(.gray)
-                        
                         Button(action: {
                             let trimmed = postText.trimmingCharacters(in: .whitespacesAndNewlines)
                             guard !trimmed.isEmpty else { return }
@@ -102,7 +108,6 @@ struct ConfesView: View {
         .ignoresSafeArea(.keyboard, edges: .bottom)
     }
     
-    // Helper to format Date to String (e.g. May 15, 2025)
     func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
@@ -114,4 +119,5 @@ struct ConfesView: View {
     ConfesView()
         .environmentObject(PostViewModel())
         .environmentObject(ReplyViewModel())
+        .environmentObject(AuthViewModel())
 }

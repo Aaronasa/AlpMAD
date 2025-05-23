@@ -36,11 +36,13 @@ class PostViewModel: ObservableObject {
     @Published var userPosts = [Post]()
     @Published var postError: String? = nil
     
+    private var repliesRef: DatabaseReference
     private var ref: DatabaseReference
     private let sentimentModel = try? SentimentAnalysis(configuration: MLModelConfiguration())
     
     init() {
         self.ref = Database.database().reference().child("posts")
+        self.repliesRef = Database.database().reference().child("replies")
         fetchAllPosts()
     }
     
@@ -226,5 +228,17 @@ class PostViewModel: ObservableObject {
             return .success(withValue: currentData)
         }
     }
+
+    func syncAllCommentCounts() {
+        for post in posts {
+            syncCommentCount(for: post.id)
+        }
+    }
     
+    func syncCommentCount(for postId: String) {
+        repliesRef.child(postId).observeSingleEvent(of: .value) { [weak self] snapshot in
+            let actualCount = Int(snapshot.childrenCount)
+            self?.ref.child(postId).child("commentCount").setValue(actualCount)
+        }
+    }
 }
