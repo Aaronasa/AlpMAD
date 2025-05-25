@@ -9,6 +9,7 @@ import SwiftUI
 struct ConfesView: View {
     @State private var postText: String = ""
     @State private var showProfile = false
+    @State private var showErrorAlert = false
     let maxCharacters = 1000
     
     let softBlue = Color(red: 160/255, green: 210/255, blue: 235/255)
@@ -56,7 +57,7 @@ struct ConfesView: View {
                     .overlay(
                         Group {
                             if postText.isEmpty {
-                                Text("What’s on your mind?")
+                                Text("What's on your mind?")
                                     .foregroundColor(.gray)
                                     .padding(.horizontal, 8)
                                     .padding(.top, 35)
@@ -75,8 +76,13 @@ struct ConfesView: View {
                         Button(action: {
                             let trimmed = postText.trimmingCharacters(in: .whitespacesAndNewlines)
                             guard !trimmed.isEmpty else { return }
-                            postViewModel.addPost(content: trimmed)
-                            postText = ""
+                            
+                            let success = postViewModel.addPost(content: trimmed)
+                            if success {
+                                postText = ""
+                            } else {
+                                showErrorAlert = true
+                            }
                         }) {
                             Text("Post")
                                 .foregroundColor(.black)
@@ -106,6 +112,18 @@ struct ConfesView: View {
             }
         }
         .ignoresSafeArea(.keyboard, edges: .bottom)
+        .alert("Gagal Memposting", isPresented: $showErrorAlert) {
+            Button("OK") {
+                postViewModel.postError = nil
+            }
+        } message: {
+            Text(postViewModel.postError ?? "Terjadi kesalahan yang tidak diketahui")
+        }
+        .onChange(of: postViewModel.postError) { error in
+            if error != nil {
+                showErrorAlert = true
+            }
+        }
     }
     
     func formatDate(_ date: Date) -> String {

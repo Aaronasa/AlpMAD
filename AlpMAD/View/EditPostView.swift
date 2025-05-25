@@ -13,6 +13,8 @@ struct EditPostView: View {
     let onCancel: () -> Void
     let errorMessage: String?
     
+    @State private var showErrorAlert = false
+    
     var body: some View {
         NavigationView {
             VStack(alignment: .leading, spacing: 16) {
@@ -25,12 +27,6 @@ struct EditPostView: View {
                     .background(Color(.systemGray6))
                     .cornerRadius(8)
                     .frame(minHeight: 120)
-                
-                if let errorMessage = errorMessage {
-                    Text(errorMessage)
-                        .foregroundColor(.red)
-                        .font(.caption)
-                }
                 
                 Spacer()
             }
@@ -45,7 +41,18 @@ struct EditPostView: View {
                 }
                 .disabled(content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             )
+            .alert("Gagal Menyimpan Perubahan", isPresented: $showErrorAlert) {
+                Button("OK") {
+                    // Alert will dismiss automatically
+                }
+            } message: {
+                Text(errorMessage ?? "")
+            }
+            .onChange(of: errorMessage) { error in
+                if error != nil {
+                    showErrorAlert = true
+                }
+            }
         }
     }
 }
-
