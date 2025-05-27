@@ -16,7 +16,7 @@ struct EditPostView: View {
     @State private var showErrorAlert = false
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Edit Post")
                     .font(.title2)
@@ -41,7 +41,7 @@ struct EditPostView: View {
                 }
                 .disabled(content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             )
-            .alert("Gagal Menyimpan Perubahan", isPresented: $showErrorAlert) {
+            .alert("Failed to Save Changes", isPresented: $showErrorAlert) {
                 Button("OK") {
                     // Alert will dismiss automatically
                 }
