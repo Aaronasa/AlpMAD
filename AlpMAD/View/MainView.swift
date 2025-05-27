@@ -14,7 +14,7 @@ struct MainView: View {
 
     var body: some View {
             if authVM.isLoggedIn {
-                NavigationView {
+                NavigationStack {
                     ConfesView()
                         .environmentObject(authVM)
                         .environmentObject(postVM)

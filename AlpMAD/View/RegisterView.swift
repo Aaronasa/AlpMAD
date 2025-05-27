@@ -8,6 +8,7 @@ struct RegisterView: View {
     @State private var isPasswordVisible = false
     @State private var showAlert = false
     @State private var alertMessage = ""
+    @State private var showSuccessAlert = false
     
     @EnvironmentObject var authVM: AuthViewModel
     
@@ -25,7 +26,7 @@ struct RegisterView: View {
                 .padding(.top, 60)
                 .padding(.bottom, 100)
             
-            Text("Let’s Get Started")
+            Text("Let's Get Started")
                 .font(.system(size: 32, weight: .bold))
                 .foregroundColor(textColor)
             
@@ -102,6 +103,16 @@ struct RegisterView: View {
                     authVM.myUser.password = password
                     authVM.myUser.age = ageInt
                     await authVM.signUp()
+                    
+                    // Check if user is authenticated after signup (indicates success)
+                    if authVM.isSignedIn {
+                        // Registration successful, show success message and navigate to login
+                        showSuccessAlert = true
+                    } else {
+                        // Registration failed, show error message
+                        alertMessage = "Registrasi gagal. Silakan coba lagi."
+                        showAlert = true
+                    }
                 }
             }) {
                 Text("Register")
@@ -132,8 +143,21 @@ struct RegisterView: View {
         }
         .background(backgroundColor)
         .edgesIgnoringSafeArea(.all)
-        .alert(isPresented: $showAlert) {
-            Alert(title: Text("Invalid Input"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+        .alert("Invalid Input", isPresented: $showAlert) {
+            Button("OK") { }
+        } message: {
+            Text(alertMessage)
+        }
+        .alert("Registrasi Berhasil!", isPresented: $showSuccessAlert) {
+            Button("OK") {
+                // Clear form and navigate to login
+                email = ""
+                password = ""
+                age = ""
+                showLogin = true
+            }
+        } message: {
+            Text("Akun Anda telah berhasil dibuat. Silakan login dengan akun yang baru dibuat.")
         }
     }
 }
@@ -144,4 +168,3 @@ struct RegisterView_Previews: PreviewProvider {
             .environmentObject(AuthViewModel())
     }
 }
-

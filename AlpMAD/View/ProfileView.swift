@@ -29,7 +29,7 @@ struct ProfileView: View {
     let secondaryTextColor = Color.secondary
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 backgroundColor.edgesIgnoringSafeArea(.all)
 
