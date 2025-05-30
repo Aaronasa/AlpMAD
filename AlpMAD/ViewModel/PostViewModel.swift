@@ -189,6 +189,7 @@ let badWords: Set<String> = [
     "syaland",
     "typo",
     "hode",
+    "cuk",
     "noob", "newbie",
     "plonco",
     "halu", "halusinasi",
