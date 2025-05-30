@@ -14,6 +14,16 @@ class ChatViewModel: ObservableObject {
     
     private var ref: DatabaseReference = Database.database().reference().child("chats")
     
+    private var overrideUserId: String?
+    
+    init(overrideUserId: String? = nil) {
+            self.overrideUserId = overrideUserId
+        }
+
+    private var currentUserId: String? {
+        return overrideUserId ?? Auth.auth().currentUser?.uid
+    }
+    
     func observeMessages(from senderId: String, to receiverId: String) {
         let chatId = generateChatId(user1: senderId, user2: receiverId)
         
@@ -57,5 +67,9 @@ class ChatViewModel: ObservableObject {
     
     private func generateChatId(user1: String, user2: String) -> String {
         return [user1, user2].sorted().joined(separator: "_")
+    }
+    
+    func isCurrentUser(_ message: Chat) -> Bool {
+        return message.senderId == currentUserId
     }
 }

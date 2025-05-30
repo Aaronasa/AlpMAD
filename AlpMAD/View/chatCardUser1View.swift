@@ -8,11 +8,15 @@
 import SwiftUI
 
 struct chatCardUser1View: View {
+    
+    let message: Chat
+    
     var body: some View {
         ZStack {
             HStack {
                 Text(
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vel semper sapien. Etiam bibendum, nunc sed."
+                    message.message
+                    
                 )
                 .foregroundColor(.white)
                 .padding(10)
@@ -29,5 +33,5 @@ struct chatCardUser1View: View {
 
 
 #Preview {
-    chatCardUser1View()
+    chatCardUser1View(message: Chat(id: "1", chatId: "1", message: "Hello", time: Date(), senderId: "1", receiveId: "2"))
 }

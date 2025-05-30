@@ -8,11 +8,14 @@
 import SwiftUI
 
 struct dateCardView: View {
+    
+    let date: Date
+    
     var body: some View {
         ZStack {
             HStack {
                 Text(
-                    "20 May"
+                    formatDate(date)
                 )
                 .foregroundColor(.black)
                 .padding(10)
@@ -25,8 +28,13 @@ struct dateCardView: View {
             .padding(.horizontal)
         }
     }
+    func formatDate(_ date: Date) -> String {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "dd MMM"
+            return formatter.string(from: date)
+        }
 }
 
 #Preview {
-    dateCardView()
+    dateCardView(date: Date())
 }
