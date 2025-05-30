@@ -9,7 +9,7 @@
 import Foundation
 
 struct MyUser{
-    var uuid: String = ""
+    var uuid: String = "" 
     var email : String = ""
     var password : String = ""
     var age : Int = 0
