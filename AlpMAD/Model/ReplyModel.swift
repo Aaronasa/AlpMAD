@@ -10,7 +10,7 @@ import Foundation
 
 struct ReplyModel: Identifiable, Hashable, Codable {
     var id: String = UUID().uuidString
-    var userId: String
+    var userId: String?
     var postId: String
     var content: String
     var timestamp: Date

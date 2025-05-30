@@ -409,9 +409,27 @@ class ReplyViewModel: ObservableObject {
 
    
     // MARK: - Update & Delete
-    func updateReply(replyId: String, newContent: String, postId: String) {
+    func updateReply(replyId: String, newContent: String, postId: String, completion: @escaping (Bool, String?) -> Void) {
+        let trimmed = newContent.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        guard !trimmed.isEmpty else {
+            completion(false, "Reply can't be empty.")
+            return
+        }
+        
+        if badWord.contains(where: { trimmed.lowercased().contains($0) }) {
+            completion(false, "Reply contains inappropriate word.")
+            return
+        }
+        
         let ref = dbRef.child("replies").child(postId).child(replyId)
-        ref.updateChildValues(["content": newContent])
+        ref.updateChildValues(["content": trimmed]) { error, _ in
+            if let error = error {
+                completion(false, "Failed to update reply: \(error.localizedDescription)")
+            } else {
+                completion(true, nil)
+            }
+        }
     }
 
     func deleteReply(_ reply: ReplyModel) {

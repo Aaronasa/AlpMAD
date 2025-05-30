@@ -85,7 +85,7 @@ struct ConfesView: View {
                                 }
                             }) {
                                 Text("Post")
-                                    .foregroundColor(.black)
+                                    .foregroundColor(.white)
                                     .padding(.horizontal, 20)
                                     .padding(.vertical, 8)
                                     .background(primaryBlue)

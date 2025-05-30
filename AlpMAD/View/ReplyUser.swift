@@ -34,7 +34,7 @@ struct ReplyUser: View {
                             .padding(.leading, 8)
                             .foregroundColor(.secondary)
                         Spacer()
-                            
+                        
                     }
                     .padding(.vertical, 5)
                     
@@ -43,24 +43,28 @@ struct ReplyUser: View {
                         .foregroundColor(.primary)
                         .padding(.vertical, 5)
                     HStack(spacing: 20) {
-                        HStack(spacing: 5) {
+                        HStack(spacing: 4) {
                             Image(systemName: "arrowshape.turn.up.left")
                                 .foregroundColor(.gray)
                             Text("\(post.commentCount)")
-                                .foregroundColor(.gray)
+                                .foregroundColor(.secondary)
+                                .padding(.trailing)
                             Image(systemName: "heart")
                                 .foregroundColor(.gray)
                             Text("\(post.likeCount)")
-                                .foregroundColor(.gray)
+                                .foregroundColor(.secondary)
+                            
                         }
+                        
                         Spacer()
-                            .padding(.horizontal, 10)
                     }
-                    .padding(.vertical, 5)
+                }
+
+                .background(Color(.systemBackground))
 
                 }
 
-            }
+            
               
             
 

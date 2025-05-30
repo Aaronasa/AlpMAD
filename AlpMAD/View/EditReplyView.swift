@@ -15,6 +15,9 @@ struct EditReplyView: View {
 
     @State private var showErrorAlert = false
 
+
+    private let primaryBlue = Color(red: 74/255, green: 144/255, blue: 226/255)
+
     var body: some View {
         VStack(spacing: 16) {
             Text("Edit Reply")
@@ -37,16 +40,26 @@ struct EditReplyView: View {
                     .foregroundColor(.gray)
             }
 
-            HStack {
-                Button("Cancel") {
+            HStack(spacing: 12) {
+                Button(action: {
                     onCancel()
+                }) {
+                    Text("Cancel")
+                        .foregroundColor(.white)
+                        .padding()
+                        .background(Color.red)
+                        .cornerRadius(8)
                 }
-                .foregroundColor(.red)
 
-                Spacer()
-
-                Button("Save Changes") {
+                Button(action: {
                     onSave()
+                }) {
+                    Text("Save Changes")
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(primaryBlue)
+                        .cornerRadius(8)
                 }
                 .disabled(content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 .opacity(content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? 0.5 : 1)
@@ -56,7 +69,7 @@ struct EditReplyView: View {
         .background(Color.white)
         .cornerRadius(16)
         .padding()
-        .alert("Gagal Menyimpan Perubahan", isPresented: $showErrorAlert) {
+        .alert("Failed to Save Changes", isPresented: $showErrorAlert) {
             Button("OK", role: .cancel) {}
         } message: {
             Text(errorMessage ?? "")
@@ -66,7 +79,6 @@ struct EditReplyView: View {
         }
     }
 }
-
 
 struct EditReplyView_Previews: PreviewProvider {
     static var previews: some View {
@@ -78,4 +90,3 @@ struct EditReplyView_Previews: PreviewProvider {
         )
     }
 }
-
