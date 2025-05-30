@@ -9,10 +9,15 @@ import SwiftUI
 
 struct ListUserChatView: View {
     @StateObject private var viewModel = ListUserChatViewModel()
+    
     @State private var selectedChatUserId: String?
     
     init(viewModel: ListUserChatViewModel = ListUserChatViewModel()) {
-            _viewModel = StateObject(wrappedValue: viewModel)
+          _viewModel = StateObject(wrappedValue: viewModel)
+      }
+    
+    private var isPreview: Bool {
+            return ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
         }
     
     var body: some View {
@@ -32,7 +37,9 @@ struct ListUserChatView: View {
             .listStyle(PlainListStyle()) 
             .navigationTitle("Chats")
             .onAppear {
-                viewModel.fetchChats()
+                if !isPreview {
+                        viewModel.fetchChats()
+                        }
             }
             .background(
                 NavigationLink(
