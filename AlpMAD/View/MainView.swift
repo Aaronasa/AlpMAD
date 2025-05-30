@@ -13,7 +13,7 @@ struct MainView: View {
 
     var body: some View {
             if authVM.isLoggedIn {
-                ConfesView()
+                ListUserChatView()
                     .environmentObject(authVM)
             } else if authVM.showLogin {
                 LoginView(showLogin: $authVM.showLogin)
