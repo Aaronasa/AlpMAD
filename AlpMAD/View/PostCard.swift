@@ -10,10 +10,13 @@ import SwiftUI
 struct PostCard: View {
     let post: Post
     @EnvironmentObject var postViewModel: PostViewModel
-
+    @EnvironmentObject var replyViewModel: ReplyViewModel
+    
     @State private var isLiked: Bool
     @State private var likeCount: Int
-
+    @State private var showReplySheet = false
+    @State private var showDetailView = false
+    
     init(post: Post) {
         self.post = post
         _isLiked = State(initialValue: post.likedByCurrentUser ?? false)
@@ -28,19 +31,29 @@ struct PostCard: View {
                 Text("Anonymous")
                     .font(.headline)
                     .foregroundColor(.primary)
+                    .padding(.trailing, 15)
 
+                
                 Text(formatDate(post.timestamp))
                     .font(.subheadline)
-                    .padding(.leading, 8)
                     .foregroundColor(.secondary)
             }
 
-            Text(post.content)
-                .font(.footnote)
+            // Tappable content area
+            Button(action: {
+                showDetailView = true
+            }) {
+                Text(post.content)
+                    .font(.footnote)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .buttonStyle(PlainButtonStyle())
 
             HStack(spacing: 20) {
                 Button(action: {
-                    // reply logic (if needed)
+                    showReplySheet = true
                 }) {
                     HStack(spacing: 4) {
                         Image(systemName: "arrowshape.turn.up.left")
@@ -48,6 +61,9 @@ struct PostCard: View {
                         Text("\(post.commentCount)")
                             .foregroundColor(.secondary)
                     }
+                }
+                .sheet(isPresented: $showReplySheet) {
+                    ReplyView(viewModel: replyViewModel, postId: post.id)
                 }
 
                 Button(action: {
@@ -62,7 +78,7 @@ struct PostCard: View {
                 }) {
                     HStack(spacing: 4) {
                         Image(systemName: isLiked ? "heart.fill" : "heart")
-                            .foregroundColor(isLiked ? .red : .blue)
+                            .foregroundColor(isLiked ? .red : .red)
                         Text("\(likeCount)")
                             .foregroundColor(.secondary)
                     }
@@ -80,6 +96,11 @@ struct PostCard: View {
                 .offset(y: 0.5),
             alignment: .bottom
         )
+        .fullScreenCover(isPresented: $showDetailView) {
+            PostDetailview(post: post)
+                .environmentObject(postViewModel)
+                .environmentObject(replyViewModel)
+        }
     }
 
     private func formatDate(_ date: Date) -> String {
@@ -89,15 +110,16 @@ struct PostCard: View {
     }
 }
 
-
 #Preview {
     PostCard(post: Post(
         id: "1",
         userId: "",
-        content: "Example post content",
+        content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi a nibh ipsum. Mauris aliquet nisl sed eleifend euismod.",
         timestamp: Date(),
-        commentCount: 0, likeCount: 3,
+        commentCount: 2,
+        likeCount: 2,
         likedByCurrentUser: false
     ))
     .environmentObject(PostViewModel())
+    .environmentObject(ReplyViewModel())
 }

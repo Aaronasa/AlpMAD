@@ -10,11 +10,16 @@ import SwiftUI
 struct MainView: View {
     @StateObject var authVM = AuthViewModel()
     @StateObject var postVM = PostViewModel()
+    @StateObject var replyVM = ReplyViewModel()
 
     var body: some View {
             if authVM.isLoggedIn {
-                ConfesView()
-                    .environmentObject(authVM)
+                NavigationStack {
+                    ConfesView()
+                        .environmentObject(authVM)
+                        .environmentObject(postVM)
+                        .environmentObject(replyVM)
+                }
             } else if authVM.showLogin {
                 LoginView(showLogin: $authVM.showLogin)
                     .environmentObject(authVM)
@@ -32,4 +37,5 @@ struct MainView: View {
     MainView()
         .environmentObject(AuthViewModel())
         .environmentObject(PostViewModel())
+        .environmentObject(ReplyViewModel())
 }
