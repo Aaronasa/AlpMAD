@@ -9,6 +9,7 @@ import SwiftUI
 struct ProfileView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @EnvironmentObject var postViewModel: PostViewModel
+    @EnvironmentObject var replyViewModel: ReplyViewModel
     @State private var editableEmail: String = ""
     @State private var editablePassword: String = ""
     @State private var editableAge: String = ""
@@ -133,7 +134,6 @@ struct ProfileView: View {
 
                         }
                         .padding(.horizontal, 20)
-                        
 
                         Spacer()
 
@@ -152,7 +152,9 @@ struct ProfileView: View {
                                     )
                                     .font(.system(size: 16, weight: .medium))
                                     Text("Sign Out")
-                                        .font(.system(size: 16, weight: .semibold))
+                                        .font(
+                                            .system(size: 16, weight: .semibold)
+                                        )
                                 }
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 16)
@@ -167,9 +169,13 @@ struct ProfileView: View {
                             }) {
                                 HStack {
                                     Image(systemName: "trash")
-                                        .font(.system(size: 16, weight: .medium))
+                                        .font(
+                                            .system(size: 16, weight: .medium)
+                                        )
                                     Text("Delete Account")
-                                        .font(.system(size: 16, weight: .semibold))
+                                        .font(
+                                            .system(size: 16, weight: .semibold)
+                                        )
                                 }
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 16)
@@ -181,12 +187,21 @@ struct ProfileView: View {
                         .padding(.horizontal, 20)
                         .padding(.bottom, 30)
 
-                    }
-                    else if selectedTab == .post{
+                    } else if selectedTab == .post {
                         ScrollView {
                             LazyVStack(spacing: 0) {
                                 ForEach(postViewModel.userPosts) { post in
                                     PostCardUser(post: post)
+                                        .environmentObject(postViewModel)
+                                }
+                            }
+                        }
+                    } else if selectedTab == .reply {
+                        ScrollView {
+                            LazyVStack(spacing: 0) {
+                                ForEach(replyViewModel.userReplies) { reply in
+                                    ReplyUser(reply: reply)
+                                        .environmentObject(replyViewModel)
                                         .environmentObject(postViewModel)
                                 }
                             }
@@ -227,6 +242,7 @@ struct ProfileView: View {
                 loadCurrentUserData()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     postViewModel.fetchUserPosts()
+                    replyViewModel.fetchUserReplies()
                 }
             }
         }
@@ -294,5 +310,6 @@ struct ProfileView_Previews: PreviewProvider {
         ProfileView()
             .environmentObject(AuthViewModel())
             .environmentObject(PostViewModel())
+            .environmentObject(ReplyViewModel())
     }
 }
