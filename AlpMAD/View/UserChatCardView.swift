@@ -8,22 +8,25 @@
 import SwiftUI
 
 struct UserChatCardView: View {
+    
+    let chat: ListUserChat
+    
     var body: some View {
         Divider()
             .frame(height: 1)
-            .background(Color.blue)
+            .background(Color.gray)
 
         HStack{
-            VStack{
+            VStack(alignment: .leading){
                 HStack{
-                    Text("Anonymous")
+                    Text(chat.username)
                         .fontWeight(.bold)
                     Spacer()
-                    Text("7:06 PM")
+                    Text(formattedTime(chat.lastMessage.time))
                         .font(.caption)
                         .foregroundColor(.gray)
                 }
-                Text("Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo, voluptatem!")
+                Text(chat.lastMessage.message)
                     .lineLimit(1)
                     .truncationMode(.tail)
                     .padding(.top, 5)
@@ -36,10 +39,16 @@ struct UserChatCardView: View {
         
         Divider()
             .frame(height: 1)
-            .background(Color.blue)
+            .background(Color.gray)
     }
+    private func formattedTime(_ date: Date) -> String {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "h:mm a"
+            return formatter.string(from: date)
+        }
+    
 }
 
-#Preview {
-    UserChatCardView()
-}
+//#Preview {
+//    UserChatCardView()
+//}
