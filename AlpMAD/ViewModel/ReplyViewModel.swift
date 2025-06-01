@@ -274,8 +274,6 @@ class ReplyViewModel: ObservableObject {
         return false
     }
 
-
-    // MARK: - Fetch Replies for Post
     func fetchReplies(for postId: String) {
         dbRef.child("replies").child(postId).observe(.value) { [weak self] snapshot in
             var loadedReplies: [ReplyModel] = []
@@ -329,8 +327,7 @@ class ReplyViewModel: ObservableObject {
             }
         }
     }
-
-    // MARK: - Post Reply
+    
     func postReply(to postId: String) -> Bool {
         guard let userId = Auth.auth().currentUser?.uid else {
             replyError = "User tidak terautentikasi"
@@ -391,7 +388,6 @@ class ReplyViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Update Post Comment Count
     private func updatePostCommentCount(for postId: String) {
         dbRef.child("replies").child(postId).observeSingleEvent(of: .value) { [weak self] snapshot in
             let actualCount = Int(snapshot.childrenCount)
@@ -407,8 +403,6 @@ class ReplyViewModel: ObservableObject {
         return replies.filter { $0.postId == postId }
     }
 
-   
-    // MARK: - Update & Delete
     func updateReply(replyId: String, newContent: String, postId: String, completion: @escaping (Bool, String?) -> Void) {
         let trimmed = newContent.trimmingCharacters(in: .whitespacesAndNewlines)
         
