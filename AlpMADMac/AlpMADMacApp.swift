@@ -1,8 +1,8 @@
 //
-//  AlpMADApp.swift
-//  AlpMAD
+//  AlpMADMacApp.swift
+//  AlpMADMac
 //
-//  Created by Aaron Asa Soelistiono on 17/05/25.
+//  Created by Aaron Asa Soelistiono on 01/06/25.
 //
 
 import Firebase
@@ -10,11 +10,9 @@ import FirebaseAppCheck
 import SwiftUI
 
 @main
-struct AlpMADApp: App {
+struct AlpMADMacApp: App {
     
     @StateObject var authVM = AuthViewModel()
-    @StateObject var postVM = PostViewModel()
-    @StateObject var replyVM = ReplyViewModel()
     
     init() {
         FirebaseApp.configure()
@@ -28,9 +26,6 @@ struct AlpMADApp: App {
         WindowGroup {
             MainView()
                 .environmentObject(authVM)
-                .environmentObject(postVM)
-                .environmentObject(replyVM)
-            
         }
     }
 }

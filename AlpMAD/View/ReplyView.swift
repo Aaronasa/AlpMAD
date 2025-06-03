@@ -113,7 +113,7 @@ struct ReplyView: View {
 #Preview {
     let vm = ReplyViewModel()
     vm.replies = [
-        Reply(postId: "1", content: "Test reply", timestamp: Date())
+        ReplyModel(userId: "",postId: "1", content: "Test reply", timestamp: Date())
     ]
     return ReplyView(viewModel: vm, postId: "sample")
 }

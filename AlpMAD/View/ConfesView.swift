@@ -90,7 +90,7 @@ struct ConfesView: View {
                                 }
                             }) {
                                 Text("Post")
-                                    .foregroundColor(.black)
+                                    .foregroundColor(.white)
                                     .padding(.horizontal, 20)
                                     .padding(.vertical, 8)
                                     .background(primaryBlue)
@@ -142,12 +142,6 @@ struct ConfesView: View {
                 }
             }
         }
-    }
-
-    func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        return formatter.string(from: date)
     }
 }
 

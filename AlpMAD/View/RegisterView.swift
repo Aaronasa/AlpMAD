@@ -150,7 +150,6 @@ struct RegisterView: View {
         }
         .alert("Registrasi Berhasil!", isPresented: $showSuccessAlert) {
             Button("OK") {
-                // Clear form and navigate to login
                 email = ""
                 password = ""
                 age = ""

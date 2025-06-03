@@ -26,7 +26,7 @@ struct PostCardUser: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("Anonymous")
+                Text("Anonymous (you)")
                     .font(.headline)
                     .foregroundColor(.primary)
 
@@ -37,7 +37,6 @@ struct PostCardUser: View {
                 
                 Spacer()
                 
-                // Menu button for edit/delete options
                 Menu {
                     Button(action: {
                         editedContent = post.content
@@ -59,7 +58,7 @@ struct PostCardUser: View {
             }
 
             Text(post.content)
-                .font(.footnote)
+                .font(.body)
 
             HStack(spacing: 20) {
                 HStack(spacing: 4) {
@@ -68,7 +67,7 @@ struct PostCardUser: View {
                     Text("\(post.commentCount)")
                         .foregroundColor(.secondary)
                         .padding(.trailing)
-                    Image(systemName: "heart.fill")
+                    Image(systemName: "heart")
                         .foregroundColor(.gray)
                     Text("\(post.likeCount)")
                         .foregroundColor(.secondary)
