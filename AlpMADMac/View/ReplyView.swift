@@ -75,7 +75,7 @@ struct ReplyView: View {
                     .background(Color(NSColor.textBackgroundColor))
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.gray.opacity(0.3))
+                            .stroke(Color.gray.opacity(0))
                     )
                     .cornerRadius(8)
                     .padding(.horizontal)
@@ -92,8 +92,10 @@ struct ReplyView: View {
                     }
                     .disabled(viewModel.newReplyText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                     .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(Color(red: 74/255, green: 144/255, blue: 226/255))
+                    .padding(.vertical, 10)
+                    .background(
+                        Color(red: 74 / 255, green: 144 / 255, blue: 226 / 255)
+                    )
                     .foregroundColor(.white)
                     .cornerRadius(8)
                     .shadow(radius: 2)
