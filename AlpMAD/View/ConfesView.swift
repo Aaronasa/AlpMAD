@@ -10,6 +10,8 @@ struct ConfesView: View {
     @State private var postText: String = ""
     @State private var showProfile = false
     @State private var showErrorAlert = false
+    @State private var showChat = false
+    
     let maxCharacters = 1000
     
     let softBlue = Color(red: 160/255, green: 210/255, blue: 235/255)
@@ -35,6 +37,9 @@ struct ConfesView: View {
                         .font(.system(size: 24))
                         .foregroundColor(.blue)
                         .padding(.trailing, 10)
+                        .onTapGesture {
+                            showChat = true
+                        }
                     Image(systemName: "person")
                         .font(.system(size: 24))
                         .foregroundColor(.blue)
@@ -114,6 +119,14 @@ struct ConfesView: View {
                 // Navigation destination
                 NavigationLink("", destination: ProfileView().environmentObject(authViewModel), isActive: $showProfile)
                     .hidden()
+                
+                NavigationLink(
+                    destination: ListUserChatView(),
+                    isActive: $showChat
+                ) {
+                    EmptyView()
+                }
+                .hidden()
             }
             .ignoresSafeArea(.keyboard, edges: .bottom)
             .alert("Gagal Memposting", isPresented: $showErrorAlert) {
