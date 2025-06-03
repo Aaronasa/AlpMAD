@@ -15,7 +15,6 @@ struct EditReplyView: View {
 
     @State private var showErrorAlert = false
 
-
     private let primaryBlue = Color(red: 74/255, green: 144/255, blue: 226/255)
 
     var body: some View {
@@ -29,7 +28,8 @@ struct EditReplyView: View {
                 .multilineTextAlignment(.center)
 
             TextEditor(text: $content)
-                .background(Color(.systemGray6).opacity(0.0))
+                .padding(8)
+                .background(Color(.systemGray6).opacity(0))
                 .cornerRadius(10)
                 .frame(height: 150)
 
@@ -41,23 +41,20 @@ struct EditReplyView: View {
             }
 
             HStack(spacing: 12) {
-                Button(action: {
-                    onCancel()
-                }) {
+                Button(action: onCancel) {
                     Text("Cancel")
                         .foregroundColor(.white)
                         .padding()
+                        .frame(maxWidth: .infinity)
                         .background(Color.red)
                         .cornerRadius(8)
                 }
 
-                Button(action: {
-                    onSave()
-                }) {
+                Button(action: onSave) {
                     Text("Save Changes")
                         .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
                         .padding()
+                        .frame(maxWidth: .infinity)
                         .background(primaryBlue)
                         .cornerRadius(8)
                 }
@@ -72,7 +69,7 @@ struct EditReplyView: View {
         .alert("Failed to Save Changes", isPresented: $showErrorAlert) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text(errorMessage ?? "")
+            Text(errorMessage ?? "Unknown error")
         }
         .onChange(of: errorMessage) { newValue in
             showErrorAlert = newValue != nil
@@ -83,10 +80,10 @@ struct EditReplyView: View {
 struct EditReplyView_Previews: PreviewProvider {
     static var previews: some View {
         EditReplyView(
-            content: .constant("Lorem ipsum dolor sit amet, consectetur adipiscing elit."),
+            content: .constant("Lorem ipsum dolor sit amet."),
             onSave: {},
             onCancel: {},
-            errorMessage: nil
+            errorMessage: "Sample error"
         )
     }
 }

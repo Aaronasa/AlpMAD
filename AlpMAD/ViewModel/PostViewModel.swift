@@ -337,20 +337,20 @@ class PostViewModel: ObservableObject {
 
     func addPost(content: String) -> Bool {
         guard let uid = Auth.auth().currentUser?.uid else {
-            postError = "User tidak terautentikasi"
+            postError = "User not authenticated"
             return false
         }
 
         // Trim whitespace and check if content is empty
         let trimmedContent = content.trimmingCharacters(in: .whitespacesAndNewlines)
         if trimmedContent.isEmpty {
-            postError = "Konten tidak boleh kosong"
+            postError = "Reply can't be empty"
             return false
         }
 
         // Check for bad words first
         if containsBadWords(trimmedContent) {
-            postError = "Post ditolak karena mengandung kata-kata yang tidak pantas"
+            postError = "Post rejected because it contains inappropriate words"
             return false
         }
 
