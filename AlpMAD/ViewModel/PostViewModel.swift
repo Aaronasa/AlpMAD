@@ -338,20 +338,20 @@ class PostViewModel: ObservableObject {
 
     func addPost(content: String) -> Bool {
         guard let uid = Auth.auth().currentUser?.uid else {
-            postError = "User tidak terautentikasi"
+            postError = "User not authenticated"
             return false
         }
 
         // Trim whitespace and check if content is empty
         let trimmedContent = content.trimmingCharacters(in: .whitespacesAndNewlines)
         if trimmedContent.isEmpty {
-            postError = "Konten tidak boleh kosong"
+            postError = "Reply can't be empty"
             return false
         }
 
         // Check for bad words first
         if containsBadWords(trimmedContent) {
-            postError = "Post ditolak karena mengandung kata-kata yang tidak pantas"
+            postError = "Post rejected because it contains inappropriate words"
             return false
         }
 
@@ -360,7 +360,7 @@ class PostViewModel: ObservableObject {
             print("Sentiment score: \(score)")
             // Lower the threshold or make it optional
             if score < 0.1 { // Lowered from 0.3 to 0.1
-                postError = "Konten terlalu negatif. Skor: \(score)"
+                postError = "Content is too negative. Score: \(score)"
                 return false
             }
         } else {
@@ -383,7 +383,7 @@ class PostViewModel: ObservableObject {
             let json = try? JSONSerialization.jsonObject(with: jsonData)
                 as? [String: Any]
         else {
-            postError = "Gagal mengkonversi data post"
+            postError = "Failed to convert post data"
             return false
         }
 
@@ -396,7 +396,7 @@ class PostViewModel: ObservableObject {
         let trimmedContent = post.content.trimmingCharacters(in: .whitespacesAndNewlines)
         
         if containsBadWords(trimmedContent) {
-            postError = "Update ditolak karena mengandung kata-kata yang tidak pantas"
+            postError = "Update rejected because containing inappropriate words"
             return false
         }
 
@@ -406,7 +406,7 @@ class PostViewModel: ObservableObject {
             let json = try? JSONSerialization.jsonObject(with: jsonData)
                 as? [String: Any]
         else {
-            postError = "Gagal mengupdate post"
+            postError = "Failed to update post"
             return false
         }
 

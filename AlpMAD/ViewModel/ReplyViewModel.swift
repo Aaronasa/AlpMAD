@@ -203,24 +203,20 @@ class ReplyViewModel: ObservableObject {
     @Published var newReplyText: String = ""
     @Published var replyError: String? = nil
     @Published var userReplies: [ReplyModel] = []
-
+    @Published var editedContent: String = ""
+    @Published var errorMessage: String? = nil
+    
     private var dbRef = Database.database().reference()
     private let sentimentModel = try? SentimentAnalysis(configuration: MLModelConfiguration())
     private let tokenizer = Tokenizer(filename: "tokenizer")
-    
+
     private func tokenize(_ text: String) -> MLMultiArray? {
         let maxLength = 10000
-        guard let tokenIds = tokenizer?.encode(text, maxLength: maxLength)
-        else {
+        guard let tokenIds = tokenizer?.encode(text, maxLength: maxLength) else {
             return nil
         }
 
-        guard
-            let mlArray = try? MLMultiArray(
-                shape: [1, NSNumber(value: maxLength)],
-                dataType: .float32
-            )
-        else {
+        guard let mlArray = try? MLMultiArray(shape: [1, NSNumber(value: maxLength)], dataType: .float32) else {
             return nil
         }
 
@@ -233,49 +229,37 @@ class ReplyViewModel: ObservableObject {
 
     private func analyzeSentimentScore(for text: String) -> Float? {
         guard let inputArray = tokenize(text),
-            let output = try? sentimentModel?.prediction(
-                dense_1_input: inputArray
-            ),
-            output.Identity.count > 0
-        else {
+              let output = try? sentimentModel?.prediction(dense_1_input: inputArray),
+              output.Identity.count > 0 else {
             return nil
         }
 
         return output.Identity[0].floatValue
     }
 
-    // Check if text contains any bad words
     private func containsBadWords(_ text: String) -> Bool {
         let lowercasedText = text.lowercased()
         let words = lowercasedText.components(separatedBy: CharacterSet.whitespacesAndNewlines)
-        
+
         for word in words {
-            // Clean the word from punctuation
             let cleanWord = word.trimmingCharacters(in: .punctuationCharacters)
-            
-            // Skip empty strings
-            if cleanWord.isEmpty {
-                continue
-            }
-            
-            // Check exact match with bad words
+            if cleanWord.isEmpty { continue }
             if badWords.contains(cleanWord) {
                 print("Found bad word: \(cleanWord)")
                 return true
             }
         }
-         for badWord in badWords {
-             if lowercasedText.contains(badWord) {
-                 print("Found bad word as substring: \(badWord)")
-                 return true
-             }
-         }
-        
+
+        for badWord in badWords {
+            if lowercasedText.contains(badWord) {
+                print("Found bad word as substring: \(badWord)")
+                return true
+            }
+        }
+
         return false
     }
 
-
-    // MARK: - Fetch Replies for Post
     func fetchReplies(for postId: String) {
         dbRef.child("replies").child(postId).observe(.value) { [weak self] snapshot in
             var loadedReplies: [ReplyModel] = []
@@ -294,7 +278,6 @@ class ReplyViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Fetch Replies by User
     func fetchUserReplies() {
         guard let uid = Auth.auth().currentUser?.uid else {
             self.userReplies = []
@@ -308,8 +291,8 @@ class ReplyViewModel: ObservableObject {
                 guard let postSnapshot = child as? DataSnapshot else { continue }
 
                 for replyChild in postSnapshot.children {
-                    guard let replySnap = replyChild as? DataSnapshot else { continue }
-                    guard let dict = replySnap.value as? [String: Any] else { continue }
+                    guard let replySnap = replyChild as? DataSnapshot,
+                          let dict = replySnap.value as? [String: Any] else { continue }
 
                     do {
                         let jsonData = try JSONSerialization.data(withJSONObject: dict)
@@ -330,49 +313,39 @@ class ReplyViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Post Reply
     func postReply(to postId: String) -> Bool {
         guard let userId = Auth.auth().currentUser?.uid else {
-            replyError = "User tidak terautentikasi"
+            replyError = "User not authenticated"
             return false
         }
 
-        // Trim whitespace and check if reply is empty
         let trimmed = newReplyText.trimmingCharacters(in: .whitespacesAndNewlines)
         if trimmed.isEmpty {
-            replyError = "Balasan tidak boleh kosong"
+            replyError = "Reply can't be empty"
             return false
         }
 
-        // Check for bad words
         if containsBadWords(trimmed) {
-            replyError = "Balasan ditolak karena mengandung kata-kata yang tidak pantas"
+            replyError = "Reply rejected because it contains inappropriate words"
             return false
         }
 
-        // Check sentiment score - optional or more lenient
         if let score = analyzeSentimentScore(for: trimmed) {
             print("Sentiment score: \(score)")
-            if score < 0.1 { // Lowered threshold from 0.3 to 0.1
-                replyError = "Konten balasan terlalu negatif. Skor: \(score)"
+            if score < 0.1 {
+                replyError = "The reply content is too negative. Score: \(score)"
                 return false
             }
         } else {
-            // If sentiment analysis fails, allow reply
             print("Sentiment analysis failed, allowing reply")
         }
 
-        let reply = ReplyModel(
-            userId: userId,
-            postId: postId,
-            content: trimmed,
-            timestamp: Date()
-        )
+        let reply = ReplyModel(userId: userId, postId: postId, content: trimmed, timestamp: Date())
 
         do {
             let data = try JSONEncoder().encode(reply)
             guard let jsonObject = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-                replyError = "Gagal mengkonversi data balasan"
+                replyError = "Failed to convert reply data"
                 return false
             }
 
@@ -386,12 +359,11 @@ class ReplyViewModel: ObservableObject {
 
             return true
         } catch {
-            replyError = "Gagal melakukan encoding data balasan"
+            replyError = "Failed to encode reply data"
             return false
         }
     }
 
-    // MARK: - Update Post Comment Count
     private func updatePostCommentCount(for postId: String) {
         dbRef.child("replies").child(postId).observeSingleEvent(of: .value) { [weak self] snapshot in
             let actualCount = Int(snapshot.childrenCount)
@@ -407,21 +379,19 @@ class ReplyViewModel: ObservableObject {
         return replies.filter { $0.postId == postId }
     }
 
-   
-    // MARK: - Update & Delete
     func updateReply(replyId: String, newContent: String, postId: String, completion: @escaping (Bool, String?) -> Void) {
         let trimmed = newContent.trimmingCharacters(in: .whitespacesAndNewlines)
-        
+
         guard !trimmed.isEmpty else {
             completion(false, "Reply can't be empty.")
             return
         }
-        
-        if badWord.contains(where: { trimmed.lowercased().contains($0) }) {
+
+        if badWords.contains(where: { trimmed.lowercased().contains($0) }) {
             completion(false, "Reply contains inappropriate word.")
             return
         }
-        
+
         let ref = dbRef.child("replies").child(postId).child(replyId)
         ref.updateChildValues(["content": trimmed]) { error, _ in
             if let error = error {
@@ -430,6 +400,45 @@ class ReplyViewModel: ObservableObject {
                 completion(true, nil)
             }
         }
+    }
+
+    func saveChanges(replyId: String, postId: String, onSuccess: @escaping () -> Void) {
+        let trimmed = editedContent.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !trimmed.isEmpty else {
+            errorMessage = "Reply cannot be empty."
+            return
+        }
+
+        if badWords.contains(where: { trimmed.lowercased().contains($0) }) {
+            errorMessage = "Reply contains inappropriate word."
+            return
+        }
+
+        let ref = dbRef.child("replies").child(postId).child(replyId)
+        ref.updateChildValues(["content": trimmed]) { [weak self] error, _ in
+            DispatchQueue.main.async {
+                if let error = error {
+                    self?.errorMessage = "Failed to update reply: \(error.localizedDescription)"
+                } else {
+                    if let index = self?.replies.firstIndex(where: { $0.id == replyId && $0.postId == postId }) {
+                        self?.replies[index].content = trimmed
+                    }
+                    if let userIndex = self?.userReplies.firstIndex(where: { $0.id == replyId && $0.postId == postId }) {
+                        self?.userReplies[userIndex].content = trimmed
+                    }
+                    
+                    self?.errorMessage = nil
+                    self?.editedContent = ""
+                    onSuccess()
+                }
+            }
+        }
+    }
+
+    func cancelEdit() {
+        errorMessage = nil
+        editedContent = ""
     }
 
     func deleteReply(_ reply: ReplyModel) {

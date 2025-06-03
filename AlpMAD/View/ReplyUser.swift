@@ -19,7 +19,7 @@ struct ReplyUser: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            // MARK: - Original Post
+           
             if let post = postViewModel.posts.first(where: {
                 $0.id == reply.postId
             }) {
@@ -64,11 +64,6 @@ struct ReplyUser: View {
 
                 }
 
-            
-              
-            
-
-            // MARK: - User Reply
             HStack(alignment: .top, spacing: 8) {
                 VStack(alignment: .leading, spacing: 4) {
                     HStack{
@@ -117,8 +112,24 @@ struct ReplyUser: View {
                 )        }
         .padding()
         .sheet(isPresented: $showingEditSheet) {
-            EditReplySheet(reply: reply, replyViewModel: replyViewModel)
+            EditReplyView(
+                content: $replyViewModel.editedContent,
+                onSave: {
+                    replyViewModel.saveChanges(replyId: reply.id, postId: reply.postId) {
+                        showingEditSheet = false
+                    }
+                },
+                onCancel: {
+                    replyViewModel.cancelEdit()
+                    showingEditSheet = false
+                },
+                errorMessage: replyViewModel.errorMessage
+            )
+            .onAppear {
+                replyViewModel.editedContent = reply.content
+            }
         }
+
         .alert(isPresented: $showingDeleteAlert) {
             Alert(
                 title: Text("Delete Reply"),
