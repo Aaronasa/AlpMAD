@@ -359,7 +359,7 @@ class PostViewModel: ObservableObject {
             print("Sentiment score: \(score)")
             // Lower the threshold or make it optional
             if score < 0.1 { // Lowered from 0.3 to 0.1
-                postError = "Konten terlalu negatif. Skor: \(score)"
+                postError = "Content is too negative. Score: \(score)"
                 return false
             }
         } else {
@@ -382,7 +382,7 @@ class PostViewModel: ObservableObject {
             let json = try? JSONSerialization.jsonObject(with: jsonData)
                 as? [String: Any]
         else {
-            postError = "Gagal mengkonversi data post"
+            postError = "Failed to convert post data"
             return false
         }
 
@@ -395,7 +395,7 @@ class PostViewModel: ObservableObject {
         let trimmedContent = post.content.trimmingCharacters(in: .whitespacesAndNewlines)
         
         if containsBadWords(trimmedContent) {
-            postError = "Update ditolak karena mengandung kata-kata yang tidak pantas"
+            postError = "Update rejected because containing inappropriate words"
             return false
         }
 
@@ -405,7 +405,7 @@ class PostViewModel: ObservableObject {
             let json = try? JSONSerialization.jsonObject(with: jsonData)
                 as? [String: Any]
         else {
-            postError = "Gagal mengupdate post"
+            postError = "Failed to update post"
             return false
         }
 
