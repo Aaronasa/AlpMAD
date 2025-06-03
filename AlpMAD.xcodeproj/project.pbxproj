@@ -63,6 +63,8 @@
 		93434D002DEC66310084DB75 /* Exceptions for "AlpMAD" folder in "AlpMADMac" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Model/chat.swift,
+				Model/ListUserChat.swift,
 				Model/MyUser.swift,
 				Model/Post.swift,
 				Model/ReplyModel.swift,
