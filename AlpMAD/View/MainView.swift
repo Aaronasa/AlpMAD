@@ -20,6 +20,8 @@ struct MainView: View {
                         .environmentObject(postVM)
                         .environmentObject(replyVM)
                 }
+                // ListUserChatView()
+                //     .environmentObject(authVM)
             } else if authVM.showLogin {
                 LoginView(showLogin: $authVM.showLogin)
                     .environmentObject(authVM)
