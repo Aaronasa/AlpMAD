@@ -44,7 +44,7 @@ class ChatViewModel: ObservableObject {
     }
     
     func sendMessage(to receiverId: String, messageText: String) {
-        guard let senderId = Auth.auth().currentUser?.uid else { return }
+        guard let senderId = currentUserId else { return }
         
         let chatId = generateChatId(user1: senderId, user2: receiverId)
         let messageId = UUID().uuidString

@@ -10,5 +10,5 @@ struct ListUserChat: Hashable, Codable, Identifiable {
     var id: String
     var listUserId: String
     var username: String
-    var lastMessage: Chat
+    var lastMessage: Chat?
 }

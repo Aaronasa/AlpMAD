@@ -22,11 +22,11 @@ struct UserChatCardView: View {
                     Text(chat.username)
                         .fontWeight(.bold)
                     Spacer()
-                    Text(formattedTime(chat.lastMessage.time))
+                    Text(chat.lastMessage != nil ? formattedTime(chat.lastMessage!.time) : "")
                         .font(.caption)
                         .foregroundColor(.gray)
                 }
-                Text(chat.lastMessage.message)
+                Text(chat.lastMessage?.message ?? "No message yet")
                     .lineLimit(1)
                     .truncationMode(.tail)
                     .padding(.top, 5)
