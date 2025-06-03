@@ -4,12 +4,6 @@
 //
 //  Created by Aaron Asa Soelistiono on 22/05/25.
 //
-//
-//  PostCardUser.swift
-//  AlpMAD
-//
-//  Created by Aaron Asa Soelistiono on 22/05/25.
-//
 
 import SwiftUI
 

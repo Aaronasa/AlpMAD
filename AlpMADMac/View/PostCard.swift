@@ -120,7 +120,7 @@ struct PostCard: View {
                 .overlay(
                     Rectangle()
                         .frame(height: 0.5)
-                        .foregroundColor(Color(NSColor.separatorColor)),
+                        .foregroundColor(Color.blue),
                     alignment: .bottom
                 )
         )

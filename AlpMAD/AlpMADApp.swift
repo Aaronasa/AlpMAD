@@ -30,7 +30,6 @@ struct AlpMADApp: App {
                 .environmentObject(authVM)
                 .environmentObject(postVM)
                 .environmentObject(replyVM)
-            
         }
     }
 }

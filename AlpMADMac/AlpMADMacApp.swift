@@ -13,6 +13,8 @@ import SwiftUI
 struct AlpMADMacApp: App {
     
     @StateObject var authVM = AuthViewModel()
+    @StateObject var postVM = PostViewModel()
+    @StateObject var replyVM = ReplyViewModel()
     
     init() {
         FirebaseApp.configure()
@@ -26,6 +28,8 @@ struct AlpMADMacApp: App {
         WindowGroup {
             MainView()
                 .environmentObject(authVM)
+                .environmentObject(postVM)
+                .environmentObject(replyVM)
         }
     }
 }
