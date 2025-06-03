@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		93434D042DEC69990084DB75 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 93434D032DEC69990084DB75 /* FirebaseAnalytics */; };
+		93434D062DEC69A00084DB75 /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = 93434D052DEC69A00084DB75 /* FirebaseAppCheck */; };
+		93434D082DEC69A30084DB75 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 93434D072DEC69A30084DB75 /* FirebaseAuth */; };
+		93434D0A2DEC69B40084DB75 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 93434D092DEC69B40084DB75 /* FirebaseCore */; };
+		93434D0C2DEC69B80084DB75 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 93434D0B2DEC69B80084DB75 /* FirebaseDatabase */; };
 		93CF5D942DD851C40022347C /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 93CF5D932DD851C40022347C /* FirebaseAnalytics */; };
 		93CF5D962DD851C40022347C /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = 93CF5D952DD851C40022347C /* FirebaseAppCheck */; };
 		93CF5D982DD851C40022347C /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 93CF5D972DD851C40022347C /* FirebaseAuth */; };
@@ -15,6 +20,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		93434CB42DEC62CC0084DB75 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 93CF5D602DD84E500022347C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 93434CA52DEC62CC0084DB75;
+			remoteInfo = AlpMADMac;
+		};
+		93434CBE2DEC62CC0084DB75 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 93CF5D602DD84E500022347C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 93434CA52DEC62CC0084DB75;
+			remoteInfo = AlpMADMac;
+		};
 		93CF5D762DD84E510022347C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 93CF5D602DD84E500022347C /* Project object */;
@@ -32,14 +51,49 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		93434CA62DEC62CC0084DB75 /* AlpMADMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AlpMADMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		93434CB32DEC62CC0084DB75 /* AlpMADMacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AlpMADMacTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		93434CBD2DEC62CC0084DB75 /* AlpMADMacUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AlpMADMacUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		93CF5D682DD84E500022347C /* AlpMAD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AlpMAD.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		93CF5D752DD84E510022347C /* AlpMADTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AlpMADTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		93CF5D7F2DD84E510022347C /* AlpMADUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AlpMADUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		93434D002DEC66310084DB75 /* Exceptions for "AlpMAD" folder in "AlpMADMac" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Model/MyUser.swift,
+				Model/Post.swift,
+				Model/ReplyModel.swift,
+				SentimentAnalysis.mlpackage,
+				tokenizer.json,
+			);
+			target = 93434CA52DEC62CC0084DB75 /* AlpMADMac */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		93434CA72DEC62CC0084DB75 /* AlpMADMac */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = AlpMADMac;
+			sourceTree = "<group>";
+		};
+		93434CB62DEC62CC0084DB75 /* AlpMADMacTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = AlpMADMacTests;
+			sourceTree = "<group>";
+		};
+		93434CC02DEC62CC0084DB75 /* AlpMADMacUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = AlpMADMacUITests;
+			sourceTree = "<group>";
+		};
 		93CF5D6A2DD84E500022347C /* AlpMAD */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				93434D002DEC66310084DB75 /* Exceptions for "AlpMAD" folder in "AlpMADMac" target */,
+			);
 			path = AlpMAD;
 			sourceTree = "<group>";
 		};
@@ -56,6 +110,32 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		93434CA32DEC62CC0084DB75 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				93434D0C2DEC69B80084DB75 /* FirebaseDatabase in Frameworks */,
+				93434D062DEC69A00084DB75 /* FirebaseAppCheck in Frameworks */,
+				93434D082DEC69A30084DB75 /* FirebaseAuth in Frameworks */,
+				93434D0A2DEC69B40084DB75 /* FirebaseCore in Frameworks */,
+				93434D042DEC69990084DB75 /* FirebaseAnalytics in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		93434CB02DEC62CC0084DB75 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		93434CBA2DEC62CC0084DB75 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		93CF5D652DD84E500022347C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -85,12 +165,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		93434D022DEC695E0084DB75 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		93CF5D5F2DD84E500022347C = {
 			isa = PBXGroup;
 			children = (
 				93CF5D6A2DD84E500022347C /* AlpMAD */,
 				93CF5D782DD84E510022347C /* AlpMADTests */,
 				93CF5D822DD84E510022347C /* AlpMADUITests */,
+				93434CA72DEC62CC0084DB75 /* AlpMADMac */,
+				93434CB62DEC62CC0084DB75 /* AlpMADMacTests */,
+				93434CC02DEC62CC0084DB75 /* AlpMADMacUITests */,
+				93434D022DEC695E0084DB75 /* Frameworks */,
 				93CF5D692DD84E500022347C /* Products */,
 			);
 			sourceTree = "<group>";
@@ -101,6 +192,9 @@
 				93CF5D682DD84E500022347C /* AlpMAD.app */,
 				93CF5D752DD84E510022347C /* AlpMADTests.xctest */,
 				93CF5D7F2DD84E510022347C /* AlpMADUITests.xctest */,
+				93434CA62DEC62CC0084DB75 /* AlpMADMac.app */,
+				93434CB32DEC62CC0084DB75 /* AlpMADMacTests.xctest */,
+				93434CBD2DEC62CC0084DB75 /* AlpMADMacUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -108,6 +202,79 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		93434CA52DEC62CC0084DB75 /* AlpMADMac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 93434CCB2DEC62CC0084DB75 /* Build configuration list for PBXNativeTarget "AlpMADMac" */;
+			buildPhases = (
+				93434CA22DEC62CC0084DB75 /* Sources */,
+				93434CA32DEC62CC0084DB75 /* Frameworks */,
+				93434CA42DEC62CC0084DB75 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				93434CA72DEC62CC0084DB75 /* AlpMADMac */,
+			);
+			name = AlpMADMac;
+			packageProductDependencies = (
+				93434D032DEC69990084DB75 /* FirebaseAnalytics */,
+				93434D052DEC69A00084DB75 /* FirebaseAppCheck */,
+				93434D072DEC69A30084DB75 /* FirebaseAuth */,
+				93434D092DEC69B40084DB75 /* FirebaseCore */,
+				93434D0B2DEC69B80084DB75 /* FirebaseDatabase */,
+			);
+			productName = AlpMADMac;
+			productReference = 93434CA62DEC62CC0084DB75 /* AlpMADMac.app */;
+			productType = "com.apple.product-type.application";
+		};
+		93434CB22DEC62CC0084DB75 /* AlpMADMacTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 93434CCC2DEC62CC0084DB75 /* Build configuration list for PBXNativeTarget "AlpMADMacTests" */;
+			buildPhases = (
+				93434CAF2DEC62CC0084DB75 /* Sources */,
+				93434CB02DEC62CC0084DB75 /* Frameworks */,
+				93434CB12DEC62CC0084DB75 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				93434CB52DEC62CC0084DB75 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				93434CB62DEC62CC0084DB75 /* AlpMADMacTests */,
+			);
+			name = AlpMADMacTests;
+			packageProductDependencies = (
+			);
+			productName = AlpMADMacTests;
+			productReference = 93434CB32DEC62CC0084DB75 /* AlpMADMacTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		93434CBC2DEC62CC0084DB75 /* AlpMADMacUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 93434CCD2DEC62CC0084DB75 /* Build configuration list for PBXNativeTarget "AlpMADMacUITests" */;
+			buildPhases = (
+				93434CB92DEC62CC0084DB75 /* Sources */,
+				93434CBA2DEC62CC0084DB75 /* Frameworks */,
+				93434CBB2DEC62CC0084DB75 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				93434CBF2DEC62CC0084DB75 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				93434CC02DEC62CC0084DB75 /* AlpMADMacUITests */,
+			);
+			name = AlpMADMacUITests;
+			packageProductDependencies = (
+			);
+			productName = AlpMADMacUITests;
+			productReference = 93434CBD2DEC62CC0084DB75 /* AlpMADMacUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		93CF5D672DD84E500022347C /* AlpMAD */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 93CF5D892DD84E510022347C /* Build configuration list for PBXNativeTarget "AlpMAD" */;
@@ -191,6 +358,17 @@
 				LastSwiftUpdateCheck = 1630;
 				LastUpgradeCheck = 1630;
 				TargetAttributes = {
+					93434CA52DEC62CC0084DB75 = {
+						CreatedOnToolsVersion = 16.3;
+					};
+					93434CB22DEC62CC0084DB75 = {
+						CreatedOnToolsVersion = 16.3;
+						TestTargetID = 93434CA52DEC62CC0084DB75;
+					};
+					93434CBC2DEC62CC0084DB75 = {
+						CreatedOnToolsVersion = 16.3;
+						TestTargetID = 93434CA52DEC62CC0084DB75;
+					};
 					93CF5D672DD84E500022347C = {
 						CreatedOnToolsVersion = 16.3;
 					};
@@ -224,11 +402,35 @@
 				93CF5D672DD84E500022347C /* AlpMAD */,
 				93CF5D742DD84E510022347C /* AlpMADTests */,
 				93CF5D7E2DD84E510022347C /* AlpMADUITests */,
+				93434CA52DEC62CC0084DB75 /* AlpMADMac */,
+				93434CB22DEC62CC0084DB75 /* AlpMADMacTests */,
+				93434CBC2DEC62CC0084DB75 /* AlpMADMacUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		93434CA42DEC62CC0084DB75 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		93434CB12DEC62CC0084DB75 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		93434CBB2DEC62CC0084DB75 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		93CF5D662DD84E500022347C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -253,6 +455,27 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		93434CA22DEC62CC0084DB75 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		93434CAF2DEC62CC0084DB75 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		93434CB92DEC62CC0084DB75 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		93CF5D642DD84E500022347C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -277,6 +500,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		93434CB52DEC62CC0084DB75 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 93434CA52DEC62CC0084DB75 /* AlpMADMac */;
+			targetProxy = 93434CB42DEC62CC0084DB75 /* PBXContainerItemProxy */;
+		};
+		93434CBF2DEC62CC0084DB75 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 93434CA52DEC62CC0084DB75 /* AlpMADMac */;
+			targetProxy = 93434CBE2DEC62CC0084DB75 /* PBXContainerItemProxy */;
+		};
 		93CF5D772DD84E510022347C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 93CF5D672DD84E500022347C /* AlpMAD */;
@@ -290,6 +523,132 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		93434CC52DEC62CC0084DB75 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = AlpMADMac/AlpMADMac.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G6D4C4AQ88;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = LabWeek7.AlpMADMac;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		93434CC62DEC62CC0084DB75 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = AlpMADMac/AlpMADMac.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G6D4C4AQ88;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = LabWeek7.AlpMADMac;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		93434CC72DEC62CC0084DB75 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = LabWeek7.AlpMADMacTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AlpMADMac.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AlpMADMac";
+			};
+			name = Debug;
+		};
+		93434CC82DEC62CC0084DB75 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = LabWeek7.AlpMADMacTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AlpMADMac.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AlpMADMac";
+			};
+			name = Release;
+		};
+		93434CC92DEC62CC0084DB75 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = LabWeek7.AlpMADMacUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = AlpMADMac;
+			};
+			name = Debug;
+		};
+		93434CCA2DEC62CC0084DB75 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = LabWeek7.AlpMADMacUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = AlpMADMac;
+			};
+			name = Release;
+		};
 		93CF5D872DD84E510022347C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -540,6 +899,33 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		93434CCB2DEC62CC0084DB75 /* Build configuration list for PBXNativeTarget "AlpMADMac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				93434CC52DEC62CC0084DB75 /* Debug */,
+				93434CC62DEC62CC0084DB75 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		93434CCC2DEC62CC0084DB75 /* Build configuration list for PBXNativeTarget "AlpMADMacTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				93434CC72DEC62CC0084DB75 /* Debug */,
+				93434CC82DEC62CC0084DB75 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		93434CCD2DEC62CC0084DB75 /* Build configuration list for PBXNativeTarget "AlpMADMacUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				93434CC92DEC62CC0084DB75 /* Debug */,
+				93434CCA2DEC62CC0084DB75 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		93CF5D632DD84E500022347C /* Build configuration list for PBXProject "AlpMAD" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -590,6 +976,31 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		93434D032DEC69990084DB75 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 93CF5D922DD851C40022347C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		93434D052DEC69A00084DB75 /* FirebaseAppCheck */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 93CF5D922DD851C40022347C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAppCheck;
+		};
+		93434D072DEC69A30084DB75 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 93CF5D922DD851C40022347C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		93434D092DEC69B40084DB75 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 93CF5D922DD851C40022347C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		93434D0B2DEC69B80084DB75 /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 93CF5D922DD851C40022347C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
+		};
 		93CF5D932DD851C40022347C /* FirebaseAnalytics */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 93CF5D922DD851C40022347C /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

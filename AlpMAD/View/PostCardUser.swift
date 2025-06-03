@@ -37,7 +37,6 @@ struct PostCardUser: View {
                 
                 Spacer()
                 
-                // Menu button for edit/delete options
                 Menu {
                     Button(action: {
                         editedContent = post.content
