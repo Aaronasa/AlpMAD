@@ -1,15 +1,16 @@
-import CoreML
-import FirebaseAuth
-import FirebaseDatabase
 //
-//  PostViewModel.swift
+//  ReplyViewModel.swift
 //  AlpMAD
 //
-//  Created by Aaron Asa Soelistiono on 19/05/25.
+//  Created by student on 22/05/25.
 //
 import Foundation
+import FirebaseDatabase
+import Combine
+import CoreML
+import FirebaseAuth
 
-let badWords: Set<String> = [
+let badWord: Set<String> = [
     "bodoh", "tolol", "goblok", "bego", "idiot", "dungu", "lemot", "bloon",
     "oon", "telmi", "dodol", "bahul", "bahlul", "pandir", "bebal", "pekok",
     "pethuk", "kemplu", "geblek", "bongak", "ogeb", "bento",
@@ -189,7 +190,6 @@ let badWords: Set<String> = [
     "syaland",
     "typo",
     "hode",
-    "cuk",
     "noob", "newbie",
     "plonco",
     "halu", "halusinasi",
@@ -197,25 +197,17 @@ let badWords: Set<String> = [
     "unfaedah", "gafaedah", "gak faedah",
 ]
 
-class PostViewModel: ObservableObject {
-    @Published var posts = [Post]()
-    @Published var userPosts = [Post]()
-    @Published var postError: String? = nil
 
-    private var repliesRef: DatabaseReference
-    private var ref: DatabaseReference
-    private let sentimentModel = try? SentimentAnalysis(
-        configuration: MLModelConfiguration()
-    )
+class ReplyViewModel: ObservableObject {
+    @Published var replies: [ReplyModel] = []
+    @Published var newReplyText: String = ""
+    @Published var replyError: String? = nil
+    @Published var userReplies: [ReplyModel] = []
 
-    init() {
-        self.ref = Database.database().reference().child("posts")
-        self.repliesRef = Database.database().reference().child("replies")
-        fetchAllPosts()
-    }
-
+    private var dbRef = Database.database().reference()
+    private let sentimentModel = try? SentimentAnalysis(configuration: MLModelConfiguration())
     private let tokenizer = Tokenizer(filename: "tokenizer")
-
+    
     private func tokenize(_ text: String) -> MLMultiArray? {
         let maxLength = 10000
         guard let tokenIds = tokenizer?.encode(text, maxLength: maxLength)
@@ -282,185 +274,178 @@ class PostViewModel: ObservableObject {
         return false
     }
 
-    func fetchAllPosts() {
-        ref.observe(.value) { snapshot in
-            guard let value = snapshot.value as? [String: Any] else {
-                self.posts = []
-                return
+
+    // MARK: - Fetch Replies for Post
+    func fetchReplies(for postId: String) {
+        dbRef.child("replies").child(postId).observe(.value) { [weak self] snapshot in
+            var loadedReplies: [ReplyModel] = []
+            for child in snapshot.children {
+                if let snap = child as? DataSnapshot,
+                   let dict = snap.value as? [String: Any],
+                   let jsonData = try? JSONSerialization.data(withJSONObject: dict),
+                   let reply = try? JSONDecoder().decode(ReplyModel.self, from: jsonData) {
+                    loadedReplies.append(reply)
+                }
             }
 
-            self.posts = value.compactMap { _, postData in
-                guard let postDict = postData as? [String: Any],
-                    let jsonData = try? JSONSerialization.data(
-                        withJSONObject: postDict
-                    ),
-                    let model = try? JSONDecoder().decode(
-                        Post.self,
-                        from: jsonData
-                    )
-                else {
-                    return nil
-                }
-                return model
-            }.sorted(by: { $0.timestamp > $1.timestamp })
+            DispatchQueue.main.async {
+                self?.replies = loadedReplies.sorted { $0.timestamp > $1.timestamp }
+            }
         }
     }
 
-    func fetchUserPosts() {
+    // MARK: - Fetch Replies by User
+    func fetchUserReplies() {
         guard let uid = Auth.auth().currentUser?.uid else {
-            self.userPosts = []
+            self.userReplies = []
             return
         }
 
-        ref.observe(.value) { snapshot in
-            guard let value = snapshot.value as? [String: Any] else {
-                self.userPosts = []
-                return
+        dbRef.child("replies").observeSingleEvent(of: .value) { [weak self] snapshot in
+            var userReplyList: [ReplyModel] = []
+
+            for child in snapshot.children {
+                guard let postSnapshot = child as? DataSnapshot else { continue }
+
+                for replyChild in postSnapshot.children {
+                    guard let replySnap = replyChild as? DataSnapshot else { continue }
+                    guard let dict = replySnap.value as? [String: Any] else { continue }
+
+                    do {
+                        let jsonData = try JSONSerialization.data(withJSONObject: dict)
+                        let reply = try JSONDecoder().decode(ReplyModel.self, from: jsonData)
+
+                        if reply.userId == uid {
+                            userReplyList.append(reply)
+                        }
+                    } catch {
+                        print("Error decoding reply: \(error)")
+                    }
+                }
             }
 
-            self.userPosts = value.compactMap { _, postData in
-                guard let postDict = postData as? [String: Any],
-                    let jsonData = try? JSONSerialization.data(
-                        withJSONObject: postDict
-                    ),
-                    let model = try? JSONDecoder().decode(
-                        Post.self,
-                        from: jsonData
-                    ),
-                    model.userId == uid
-                else {
-                    return nil
-                }
-                return model
-            }.sorted(by: { $0.timestamp > $1.timestamp })
+            DispatchQueue.main.async {
+                self?.userReplies = userReplyList.sorted { $0.timestamp > $1.timestamp }
+            }
         }
     }
 
-    func addPost(content: String) -> Bool {
-        guard let uid = Auth.auth().currentUser?.uid else {
-            postError = "User not authenticated"
+    // MARK: - Post Reply
+    func postReply(to postId: String) -> Bool {
+        guard let userId = Auth.auth().currentUser?.uid else {
+            replyError = "User tidak terautentikasi"
             return false
         }
 
-        // Trim whitespace and check if content is empty
-        let trimmedContent = content.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmedContent.isEmpty {
-            postError = "Reply can't be empty"
+        // Trim whitespace and check if reply is empty
+        let trimmed = newReplyText.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty {
+            replyError = "Balasan tidak boleh kosong"
             return false
         }
 
-        // Check for bad words first
-        if containsBadWords(trimmedContent) {
-            postError = "Post rejected because it contains inappropriate words"
+        // Check for bad words
+        if containsBadWords(trimmed) {
+            replyError = "Balasan ditolak karena mengandung kata-kata yang tidak pantas"
             return false
         }
 
-        // Check sentiment score - make this optional or more lenient
-        if let score = analyzeSentimentScore(for: trimmedContent) {
+        // Check sentiment score - optional or more lenient
+        if let score = analyzeSentimentScore(for: trimmed) {
             print("Sentiment score: \(score)")
-            // Lower the threshold or make it optional
-            if score < 0.1 { // Lowered from 0.3 to 0.1
-                postError = "Content is too negative. Score: \(score)"
+            if score < 0.1 { // Lowered threshold from 0.3 to 0.1
+                replyError = "Konten balasan terlalu negatif. Skor: \(score)"
                 return false
             }
         } else {
-            // If sentiment analysis fails, allow the post
-            print("Sentiment analysis failed, allowing post")
+            // If sentiment analysis fails, allow reply
+            print("Sentiment analysis failed, allowing reply")
         }
 
-        let postId = UUID().uuidString
-
-        let post = Post(
-            id: postId,
-            userId: uid,
-            content: trimmedContent,
-            timestamp: Date(),
-            commentCount: 0,
-            likeCount: 0
+        let reply = ReplyModel(
+            userId: userId,
+            postId: postId,
+            content: trimmed,
+            timestamp: Date()
         )
 
-        guard let jsonData = try? JSONEncoder().encode(post),
-            let json = try? JSONSerialization.jsonObject(with: jsonData)
-                as? [String: Any]
-        else {
-            postError = "Failed to convert post data"
+        do {
+            let data = try JSONEncoder().encode(reply)
+            guard let jsonObject = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+                replyError = "Gagal mengkonversi data balasan"
+                return false
+            }
+
+            dbRef.child("replies").child(postId).child(reply.id).setValue(jsonObject)
+            updatePostCommentCount(for: postId)
+
+            DispatchQueue.main.async {
+                self.newReplyText = ""
+                self.replyError = nil
+            }
+
+            return true
+        } catch {
+            replyError = "Gagal melakukan encoding data balasan"
             return false
         }
-
-        ref.child(postId).setValue(json)
-        postError = nil
-        return true
     }
 
-    func updatePost(_ post: Post) -> Bool {
-        let trimmedContent = post.content.trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        if containsBadWords(trimmedContent) {
-            postError = "Update rejected because containing inappropriate words"
-            return false
-        }
-
-        guard let uid = Auth.auth().currentUser?.uid,
-            post.userId == uid,
-            let jsonData = try? JSONEncoder().encode(post),
-            let json = try? JSONSerialization.jsonObject(with: jsonData)
-                as? [String: Any]
-        else {
-            postError = "Failed to update post"
-            return false
-        }
-
-        ref.child(post.id).setValue(json)
-        postError = nil
-        return true
-    }
-
-    func deletePost(_ post: Post) {
-        guard let uid = Auth.auth().currentUser?.uid,
-            post.userId == uid
-        else { return }
-
-        ref.child(post.id).removeValue()
-    }
-
-    func delete(at offsets: IndexSet) {
-        offsets.forEach { i in
-            let post = posts[i]
-            deletePost(post)
-        }
-    }
-
-    func likePost(_ post: Post) {
-        let likeRef = ref.child(post.id).child("likeCount")
-        likeRef.runTransactionBlock { currentData in
-            var count = currentData.value as? Int ?? 0
-            count += 1
-            currentData.value = count
-            return .success(withValue: currentData)
-        }
-    }
-
-    func unlikePost(_ post: Post) {
-        let likeRef = ref.child(post.id).child("likeCount")
-        likeRef.runTransactionBlock { currentData in
-            var count = currentData.value as? Int ?? 0
-            count = max(0, count - 1)
-            currentData.value = count
-            return .success(withValue: currentData)
-        }
-    }
-
-    func syncAllCommentCounts() {
-        for post in posts {
-            syncCommentCount(for: post.id)
+    // MARK: - Update Post Comment Count
+    private func updatePostCommentCount(for postId: String) {
+        dbRef.child("replies").child(postId).observeSingleEvent(of: .value) { [weak self] snapshot in
+            let actualCount = Int(snapshot.childrenCount)
+            self?.dbRef.child("posts").child(postId).child("commentCount").setValue(actualCount)
         }
     }
 
     func syncCommentCount(for postId: String) {
-        repliesRef.child(postId).observeSingleEvent(of: .value) {
-            [weak self] snapshot in
-            let actualCount = Int(snapshot.childrenCount)
-            self?.ref.child(postId).child("commentCount").setValue(actualCount)
+        updatePostCommentCount(for: postId)
+    }
+
+    func replies(for postId: String) -> [ReplyModel] {
+        return replies.filter { $0.postId == postId }
+    }
+
+   
+    // MARK: - Update & Delete
+    func updateReply(replyId: String, newContent: String, postId: String, completion: @escaping (Bool, String?) -> Void) {
+        let trimmed = newContent.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        guard !trimmed.isEmpty else {
+            completion(false, "Reply can't be empty.")
+            return
         }
+        
+        if badWord.contains(where: { trimmed.lowercased().contains($0) }) {
+            completion(false, "Reply contains inappropriate word.")
+            return
+        }
+        
+        let ref = dbRef.child("replies").child(postId).child(replyId)
+        ref.updateChildValues(["content": trimmed]) { error, _ in
+            if let error = error {
+                completion(false, "Failed to update reply: \(error.localizedDescription)")
+            } else {
+                completion(true, nil)
+            }
+        }
+    }
+
+    func deleteReply(_ reply: ReplyModel) {
+        let replyRef = dbRef.child("replies").child(reply.postId).child(reply.id)
+        replyRef.removeValue { [weak self] error, _ in
+            if error == nil {
+                self?.updatePostCommentCount(for: reply.postId)
+            }
+        }
+    }
+}
+
+extension Date {
+    func timeAgoDisplay() -> String {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .abbreviated
+        return formatter.localizedString(for: self, relativeTo: Date())
     }
 }
