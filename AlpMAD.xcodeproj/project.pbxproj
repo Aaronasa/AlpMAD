@@ -73,6 +73,14 @@
 			);
 			target = 93434CA52DEC62CC0084DB75 /* AlpMADMac */;
 		};
+		935563982DF02DB8000D0CF2 /* Exceptions for "AlpMAD" folder in "AlpMADTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Model/chat.swift,
+				ViewModel/ChatViewModel.swift,
+			);
+			target = 93CF5D742DD84E510022347C /* AlpMADTests */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -94,6 +102,7 @@
 		93CF5D6A2DD84E500022347C /* AlpMAD */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
+				935563982DF02DB8000D0CF2 /* Exceptions for "AlpMAD" folder in "AlpMADTests" target */,
 				93434D002DEC66310084DB75 /* Exceptions for "AlpMAD" folder in "AlpMADMac" target */,
 			);
 			path = AlpMAD;
