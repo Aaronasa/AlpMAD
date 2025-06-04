@@ -153,11 +153,11 @@ struct ConfesView: View {
             }
         }
         .background(Color(NSColor.windowBackgroundColor))
-        //        .sheet(isPresented: $showProfile) {
-        //            ProfileView()
-        //                .environmentObject(authViewModel)
-        //                .frame(minWidth: 500, minHeight: 400)
-        //        }
+                .sheet(isPresented: $showProfile) {
+                    ProfileView()
+                        .environmentObject(authViewModel)
+                        .frame(minWidth: 500, minHeight: 400)
+                }
         .alert("Gagal Memposting", isPresented: $showErrorAlert) {
             Button("OK") {
                 postViewModel.postError = nil

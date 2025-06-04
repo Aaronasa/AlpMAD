@@ -33,13 +33,13 @@ struct ProfileView: View {
         }
     }
 
-    let backgroundColor = Color(NSColor.windowBackgroundColor)
+    let backgroundColor = Color.white
     let primaryBlue = Color(red: 74 / 255, green: 144 / 255, blue: 226 / 255)
-    let textColor = Color.primary
+    let textColor = Color.black
     let secondaryTextColor = Color.secondary
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 0) {
                 VStack(spacing: 16) {
                     Text("Anonymous")
@@ -48,13 +48,17 @@ struct ProfileView: View {
                         .foregroundColor(textColor)
                         .frame(maxWidth: .infinity, alignment: .leading)
 
-                    Picker("Update Type", selection: $selectedTab) {
+                    Picker("", selection: $selectedTab) {
                         ForEach(UpdateType.allCases) { type in
-                            Text(type.title).tag(type)
+                            Text(type.title)
+                                .foregroundColor(.black)
+                                .tag(type)
                         }
                     }
                     .pickerStyle(SegmentedPickerStyle())
+                    .accentColor(.blue)
                     .padding(.bottom)
+                    
                 }
                 .padding([.top, .horizontal], 20)
 
@@ -69,8 +73,10 @@ struct ProfileView: View {
                     case .reply:
                         replyListView
                     }
+                    
                 }
                 .padding(20)
+                
 
                 Spacer()
 
@@ -81,6 +87,7 @@ struct ProfileView: View {
                 }
             }
             .frame(minWidth: 500, minHeight: 600)
+            .foregroundColor(textColor)
             .background(backgroundColor)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
@@ -120,7 +127,6 @@ struct ProfileView: View {
 
     var editProfileView: some View {
         VStack(alignment: .leading, spacing: 24) {
-            // Email Field
             VStack(alignment: .leading, spacing: 8) {
                 Text("Email")
                     .font(.headline)
@@ -129,6 +135,7 @@ struct ProfileView: View {
                 TextField(authViewModel.myUser.email, text: $editableEmail)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .frame(maxWidth: .infinity)
+                    .foregroundColor(textColor)
             }
 
             // Password Field
@@ -140,8 +147,10 @@ struct ProfileView: View {
                 HStack {
                     if isPasswordVisible {
                         TextField(authViewModel.myUser.password, text: $editablePassword)
+                            .foregroundColor(textColor)
                     } else {
                         SecureField("Password", text: $editablePassword)
+                            .foregroundColor(textColor)
                     }
 
                     Button {
@@ -150,7 +159,7 @@ struct ProfileView: View {
                         Image(systemName: isPasswordVisible ? "eye.slash.fill" : "eye.fill")
                             .foregroundColor(primaryBlue)
                     }
-                    .buttonStyle(BorderlessButtonStyle()) // Important for macOS buttons inside HStack
+                    .buttonStyle(BorderlessButtonStyle())
                 }
                 .textFieldStyle(RoundedBorderTextFieldStyle())
             }
@@ -164,6 +173,7 @@ struct ProfileView: View {
                 TextField("New Age", text: $editableAge)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .frame(maxWidth: .infinity)
+                    .foregroundColor(textColor)
             }
         }
     }
@@ -276,6 +286,6 @@ struct ProfileView_Previews: PreviewProvider {
             .environmentObject(AuthViewModel())
             .environmentObject(PostViewModel())
             .environmentObject(ReplyViewModel())
-            .frame(width: 600, height: 700)
+
     }
 }
