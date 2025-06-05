@@ -20,8 +20,9 @@ struct ListUserChatView: View {
             return ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
         }
     
+    
     var body: some View {
-        NavigationView {
+        NavigationStack {
             List {
                 ForEach(viewModel.userChats) { chat in
                     Button {
@@ -31,34 +32,25 @@ struct ListUserChatView: View {
                             .padding(.vertical, 8)
                     }
                     .listRowSeparator(.hidden)
-                    .listRowInsets(EdgeInsets()) // Optional: remove default insets
+                    .listRowInsets(EdgeInsets())
                 }
             }
-            .listStyle(PlainListStyle()) 
+            .listStyle(PlainListStyle())
             .navigationTitle("Chats")
             .onAppear {
                 if !isPreview {
-                        viewModel.fetchChats()
-                        }
-            }
-            .background(
-                NavigationLink(
-                    destination: Group {
-                        if let receiverId = selectedChatUserId {
-                            ChatView(viewModel: ChatViewModel(), receiverId: receiverId)
-                        } else {
-                            EmptyView()
-                        }
-                    },
-                    isActive: Binding(
-                        get: { selectedChatUserId != nil },
-                        set: { if !$0 { selectedChatUserId = nil } }
-                    )
-                ) {
-                    EmptyView()
+                    viewModel.fetchChats()
                 }
-                .hidden()
-            )
+            }
+            // Push ChatView when a user is selected
+            .navigationDestination(isPresented: Binding(
+                get: { selectedChatUserId != nil },
+                set: { if !$0 { selectedChatUserId = nil } }
+            )) {
+                if let receiverId = selectedChatUserId {
+                    ChatView(viewModel: ChatViewModel(), receiverId: receiverId)
+                }
+            }
         }
     }
 }
