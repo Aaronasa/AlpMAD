@@ -43,7 +43,6 @@ struct EditPostView: View {
             )
             .alert("Failed to Save Changes", isPresented: $showErrorAlert) {
                 Button("OK") {
-                    // Alert will dismiss automatically
                 }
             } message: {
                 Text(errorMessage ?? "")

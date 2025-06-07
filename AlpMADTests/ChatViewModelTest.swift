@@ -24,7 +24,6 @@ class MockDatabaseReference: DatabaseReferencing {
     }
 }
 
-
 final class ChatViewModelTest: XCTestCase {
 
     override func setUpWithError() throws {

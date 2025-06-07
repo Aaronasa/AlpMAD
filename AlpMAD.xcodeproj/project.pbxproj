@@ -75,6 +75,8 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Model/chat.swift,
+				Model/MyUser.swift,
+				ViewModel/AuthViewModel.swift,
 				ViewModel/ChatViewModel.swift,
 			);
 			target = 93CF5D742DD84E510022347C /* AlpMADTests */;

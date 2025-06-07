@@ -31,63 +31,62 @@ struct ProfileView: View {
             case .reply: return "Replies"
             }
         }
+        var icon: String {
+            switch self {
+            case .edit: return "person.crop.circle"
+            case .post: return "doc.text"
+            case .reply: return "bubble.left.and.bubble.right"
+            }
+        }
     }
 
-    let backgroundColor = Color.white
-    let primaryBlue = Color(red: 74 / 255, green: 144 / 255, blue: 226 / 255)
-    let textColor = Color.black
-    let secondaryTextColor = Color.secondary
+    // Enhanced Color Scheme
+    let backgroundColor = Color(red: 0.98, green: 0.98, blue: 1.0) // Light blue-tinted background
+    let primaryBlue = Color(red: 0.2, green: 0.4, blue: 0.9) // Vibrant blue
+    let accentBlue = Color(red: 0.1, green: 0.3, blue: 0.8) // Darker blue for highlights
+    let cardBackground = Color.white
+    let textColor = Color(red: 0.1, green: 0.1, blue: 0.1) // Rich dark gray
+    let secondaryTextColor = Color(red: 0.4, green: 0.4, blue: 0.4)
+    let borderColor = Color(red: 0.9, green: 0.9, blue: 0.9)
 
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                VStack(spacing: 16) {
-                    Text("Anonymous")
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .foregroundColor(textColor)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                // Enhanced Header with Profile Info
+                profileHeader
+                
+                // Beautiful Tab Bar
+                customTabBar
+                
+                Divider()
+                    .background(borderColor)
 
-                    Picker("", selection: $selectedTab) {
-                        ForEach(UpdateType.allCases) { type in
-                            Text(type.title)
-                                .foregroundColor(.black)
-                                .tag(type)
+                // Content Area with Card Design
+                ZStack {
+                    backgroundColor
+                    
+                    Group {
+                        switch selectedTab {
+                        case .edit:
+                            editProfileView
+                        case .post:
+                            postListView
+                        case .reply:
+                            replyListView
                         }
                     }
-                    .pickerStyle(SegmentedPickerStyle())
-                    .accentColor(.blue)
-                    .padding(.bottom)
-                    
+                    .padding(.top, 20)
                 }
-                .padding([.top, .horizontal], 20)
-
-                Divider()
-
-                Group {
-                    switch selectedTab {
-                    case .edit:
-                        editProfileView
-                    case .post:
-                        postListView
-                    case .reply:
-                        replyListView
-                    }
-                    
-                }
-                .padding(20)
-                
 
                 Spacer()
 
                 if selectedTab == .edit {
                     actionButtons
-                        .padding(.horizontal, 20)
+                        .padding(.horizontal, 24)
                         .padding(.bottom, 30)
                 }
             }
             .frame(minWidth: 500, minHeight: 600)
-            .foregroundColor(textColor)
             .background(backgroundColor)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
@@ -95,7 +94,11 @@ struct ProfileView: View {
                         saveProfile()
                     }
                     .foregroundColor(primaryBlue)
-                    .font(.system(size: 16, weight: .medium))
+                    .font(.system(size: 16, weight: .semibold))
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(primaryBlue.opacity(0.1))
+                    .cornerRadius(8)
                 }
             }
             .alert("Save Changes", isPresented: $showingSaveAlert) {
@@ -111,9 +114,7 @@ struct ProfileView: View {
                     }
                 }
             } message: {
-                Text(
-                    "Are you sure you want to delete your account? This action cannot be undone."
-                )
+                Text("Are you sure you want to delete your account? This action cannot be undone.")
             }
             .onAppear {
                 loadCurrentUserData()
@@ -124,110 +125,230 @@ struct ProfileView: View {
             }
         }
     }
+    
+    var profileHeader: some View {
+        VStack(spacing: 16) {
+            // Profile Avatar
+            ZStack {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [primaryBlue, accentBlue],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 80, height: 80)
+                    .shadow(color: primaryBlue.opacity(0.3), radius: 8, x: 0, y: 4)
+                
+                Image(systemName: "person.fill")
+                    .font(.system(size: 36, weight: .medium))
+                    .foregroundColor(.white)
+            }
+            
+            // User Info
+            VStack(spacing: 4) {
+                Text(authViewModel.myUser.email)
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                    .foregroundColor(textColor)
+                
+                Text("Age: \(authViewModel.myUser.age)")
+                    .font(.subheadline)
+                    .foregroundColor(secondaryTextColor)
+            }
+        }
+        .padding(.top, 20)
+        .padding(.bottom, 24)
+        .background(cardBackground)
+    }
+    
+    var customTabBar: some View {
+        HStack(spacing: 0) {
+            ForEach(UpdateType.allCases) { type in
+                Button(action: {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                        selectedTab = type
+                    }
+                }) {
+                    VStack(spacing: 8) {
+                        Image(systemName: type.icon)
+                            .font(.system(size: 18, weight: .medium))
+                        
+                        Text(type.title)
+                            .font(.system(size: 14, weight: .medium))
+                    }
+                    .foregroundColor(selectedTab == type ? primaryBlue : secondaryTextColor)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(selectedTab == type ? primaryBlue.opacity(0.1) : Color.clear)
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(selectedTab == type ? primaryBlue.opacity(0.3) : Color.clear, lineWidth: 1)
+                    )
+                }
+                .buttonStyle(PlainButtonStyle())
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        .background(cardBackground)
+    }
 
     var editProfileView: some View {
-        VStack(alignment: .leading, spacing: 24) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Email")
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                    .foregroundColor(textColor)
-                TextField(authViewModel.myUser.email, text: $editableEmail)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .frame(maxWidth: .infinity)
-                    .foregroundColor(textColor)
-            }
-
-            // Password Field
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Password")
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                    .foregroundColor(textColor)
-                HStack {
-                    if isPasswordVisible {
-                        TextField(authViewModel.myUser.password, text: $editablePassword)
+        ScrollView {
+            VStack(spacing: 24) {
+                // Form Card
+                VStack(alignment: .leading, spacing: 24) {
+                    // Email Field
+                    VStack(alignment: .leading, spacing: 12) {
+                        Label("Email Address", systemImage: "envelope")
+                            .font(.headline)
+                            .fontWeight(.semibold)
                             .foregroundColor(textColor)
-                    } else {
-                        SecureField("Password", text: $editablePassword)
+                        
+                        TextField(authViewModel.myUser.email, text: $editableEmail)
+                            .textFieldStyle(CustomTextFieldStyle())
                             .foregroundColor(textColor)
                     }
 
-                    Button {
-                        isPasswordVisible.toggle()
-                    } label: {
-                        Image(systemName: isPasswordVisible ? "eye.slash.fill" : "eye.fill")
-                            .foregroundColor(primaryBlue)
+                    // Password Field
+                    VStack(alignment: .leading, spacing: 12) {
+                        Label("Password", systemImage: "lock")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(textColor)
+                        
+                        HStack {
+                            Group {
+                                if isPasswordVisible {
+                                    TextField("Enter new password", text: $editablePassword)
+                                } else {
+                                    SecureField("Enter new password", text: $editablePassword)
+                                }
+                            }
+                            .foregroundColor(textColor)
+
+                            Button {
+                                withAnimation(.easeInOut(duration: 0.2)) {
+                                    isPasswordVisible.toggle()
+                                }
+                            } label: {
+                                Image(systemName: isPasswordVisible ? "eye.slash.fill" : "eye.fill")
+                                    .foregroundColor(primaryBlue)
+                                    .font(.system(size: 16))
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                        }
+                        .textFieldStyle(CustomTextFieldStyle())
                     }
-                    .buttonStyle(BorderlessButtonStyle())
+
+                    // Age Field
+                    VStack(alignment: .leading, spacing: 12) {
+                        Label("Age", systemImage: "calendar")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(textColor)
+                        
+                        TextField("Enter your age", text: $editableAge)
+                            .textFieldStyle(CustomTextFieldStyle())
+                            .foregroundColor(textColor)
+                    }
                 }
-                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding(24)
+                .background(cardBackground)
+                .cornerRadius(16)
+                .shadow(color: Color.black.opacity(0.05), radius: 8, x: 0, y: 2)
             }
-
-            // Age Field
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Age")
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                    .foregroundColor(textColor)
-                TextField("New Age", text: $editableAge)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .frame(maxWidth: .infinity)
-                    .foregroundColor(textColor)
-            }
+            .padding(.horizontal, 24)
         }
     }
 
     var actionButtons: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 16) {
             Button {
                 Task {
                     authViewModel.signOut()
                 }
             } label: {
-                Label("Sign Out", systemImage: "rectangle.portrait.and.arrow.right")
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
-                    .background(primaryBlue)
-                    .foregroundColor(.white)
-                    .cornerRadius(12)
+                HStack(spacing: 12) {
+                    Image(systemName: "rectangle.portrait.and.arrow.right")
+                        .font(.system(size: 16, weight: .medium))
+                    Text("Sign Out")
+                        .font(.system(size: 16, weight: .semibold))
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 16)
+                .background(
+                    LinearGradient(
+                        colors: [primaryBlue, accentBlue],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .foregroundColor(.white)
+                .cornerRadius(12)
+                .shadow(color: primaryBlue.opacity(0.3), radius: 6, x: 0, y: 3)
             }
+            .buttonStyle(PlainButtonStyle())
 
             Button {
                 showingDeleteAlert = true
             } label: {
-                Label("Delete Account", systemImage: "trash")
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
-                    .background(Color.red)
-                    .foregroundColor(.white)
-                    .cornerRadius(12)
+                HStack(spacing: 12) {
+                    Image(systemName: "trash")
+                        .font(.system(size: 16, weight: .medium))
+                    Text("Delete Account")
+                        .font(.system(size: 16, weight: .semibold))
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 16)
+                .background(
+                    LinearGradient(
+                        colors: [Color.red, Color.red.opacity(0.8)],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .foregroundColor(.white)
+                .cornerRadius(12)
+                .shadow(color: Color.red.opacity(0.3), radius: 6, x: 0, y: 3)
             }
+            .buttonStyle(PlainButtonStyle())
         }
     }
 
     var postListView: some View {
         ScrollView {
-            LazyVStack(spacing: 8) {
+            LazyVStack(spacing: 16) {
                 ForEach(postViewModel.userPosts) { post in
                     PostCardUser(post: post)
                         .environmentObject(postViewModel)
+                        .background(cardBackground)
+                        .cornerRadius(12)
+                        .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
                 }
             }
-            .padding(.horizontal, 20)
+            .padding(.horizontal, 24)
         }
     }
 
     var replyListView: some View {
         ScrollView {
-            LazyVStack(spacing: 8) {
+            LazyVStack(spacing: 16) {
                 ForEach(replyViewModel.userReplies) { reply in
                     ReplyUser(reply: reply)
                         .environmentObject(replyViewModel)
                         .environmentObject(postViewModel)
+                        .background(cardBackground)
+                        .cornerRadius(12)
+                        .shadow(color: Color.black.opacity(0.05), radius: 6, x: 0, y: 2)
                 }
             }
-            .padding(.horizontal, 20)
+            .padding(.horizontal, 24)
         }
     }
 
@@ -280,12 +401,26 @@ struct ProfileView: View {
     }
 }
 
+// Custom Text Field Style
+struct CustomTextFieldStyle: TextFieldStyle {
+    func _body(configuration: TextField<Self._Label>) -> some View {
+        configuration
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(Color(red: 0.97, green: 0.97, blue: 0.97))
+            .cornerRadius(10)
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(Color(red: 0.9, green: 0.9, blue: 0.9), lineWidth: 1)
+            )
+    }
+}
+
 struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {
         ProfileView()
             .environmentObject(AuthViewModel())
             .environmentObject(PostViewModel())
             .environmentObject(ReplyViewModel())
-
     }
 }

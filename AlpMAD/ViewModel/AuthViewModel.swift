@@ -11,6 +11,7 @@ import Foundation
 
 @MainActor
 class AuthViewModel: ObservableObject {
+    
     @Published var user: User?
     @Published var isSignedIn: Bool
     @Published var myUser: MyUser
