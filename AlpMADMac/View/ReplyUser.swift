@@ -10,6 +10,7 @@ import SwiftUI
 struct ReplyUser: View {
     let primaryBlue = Color(red: 74 / 255, green: 144 / 255, blue: 226 / 255)
     let softBlue = Color(red: 160/255, green: 210/255, blue: 235/255)
+    let lightGray = Color(red: 248/255, green: 248/255, blue: 250/255)
     let reply: ReplyModel
 
     @EnvironmentObject var replyViewModel: ReplyViewModel
@@ -17,54 +18,71 @@ struct ReplyUser: View {
 
     @State private var showingEditSheet = false
     @State private var showingDeleteAlert = false
+    @State private var showingPopover = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 16) {
+            // Original Post Section
             if let post = postViewModel.posts.first(where: { $0.id == reply.postId }) {
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: 12) {
                     HStack {
                         Text("Anonymous")
                             .font(.headline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.black)
                         
                         Text(formatDate(post.timestamp))
                             .font(.subheadline)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.gray)
                         
                         Spacer()
                     }
-                    .padding(.vertical, 5)
                     
                     Text(post.content)
                         .font(.body)
-                        .foregroundColor(.primary)
-                        .padding(.vertical, 5)
+                        .foregroundColor(.black)
+                        .lineLimit(nil)
+                        .fixedSize(horizontal: false, vertical: true)
                     
                     HStack(spacing: 20) {
-                        HStack(spacing: 4) {
+                        HStack(spacing: 6) {
                             Image(systemName: "arrowshape.turn.up.left")
                                 .foregroundColor(.gray)
+                                .font(.system(size: 14))
                             Text("\(post.commentCount)")
-                                .foregroundColor(.secondary)
-                            
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                        }
+                        
+                        HStack(spacing: 6) {
                             Image(systemName: "heart")
                                 .foregroundColor(.gray)
+                                .font(.system(size: 14))
                             Text("\(post.likeCount)")
-                                .foregroundColor(.secondary)
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
                         }
+                        
                         Spacer()
                     }
                 }
-                .padding()
-                .background(Color(NSColor.controlBackgroundColor))
-                .cornerRadius(10)
+                .padding(16)
+                .background(lightGray)
+                .cornerRadius(12)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+                )
             }
 
-            HStack(alignment: .top, spacing: 8) {
-                VStack(alignment: .leading, spacing: 4) {
+            // Reply Section
+            HStack(alignment: .top, spacing: 12) {
+                VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Text("Anonymous (you)")
                             .font(.subheadline)
                             .fontWeight(.semibold)
+                            .foregroundColor(.black)
                         
                         Text(formatDate(reply.timestamp))
                             .font(.caption)
@@ -75,39 +93,70 @@ struct ReplyUser: View {
 
                     Text(reply.content)
                         .font(.body)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.black)
+                        .lineLimit(nil)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
 
                 Spacer()
 
-                Menu {
-                    Button("Edit") {
-                        showingEditSheet = true
-                    }
-                    Button("Delete", role: .destructive) {
-                        showingDeleteAlert = true
-                    }
-                } label: {
-                    Image(systemName: "ellipsis.circle")
-                        .foregroundColor(.blue)
+                Button(action: {
+                    showingPopover.toggle()
+                }) {
+                    Image(systemName: "ellipsis")
+                        .foregroundColor(.black)
                         .font(.title2)
                 }
-                .menuStyle(BorderlessButtonMenuStyle())
+                .popover(isPresented: $showingPopover, arrowEdge: .bottom) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        Button(action: {
+                            replyViewModel.editedContent = reply.content
+                            showingEditSheet = true
+                            showingPopover = false
+                        }) {
+                            HStack {
+                                Text("Edit")
+                                    .foregroundStyle(.gray)
+                                Spacer()
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                        }
+                        .buttonStyle(.plain)
+                        .contentShape(Rectangle())
+                        
+                        Divider()
+                        
+                        Button(action: {
+                            showingDeleteAlert = true
+                            showingPopover = false
+                        }) {
+                            HStack {
+                                Text("Delete")
+                                Spacer()
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .foregroundColor(.red)
+                        }
+                        .buttonStyle(.plain)
+                        .contentShape(Rectangle())
+                    }
+                    .frame(width: 120)
+                    .background(Color.white)
+                }
             }
-            .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 10)
+            .padding(16)
+            .background(Color.white)
+            .cornerRadius(12)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
                     .stroke(primaryBlue, lineWidth: 2)
             )
-            .overlay(
-                Rectangle()
-                    .frame(height: 1)
-                    .foregroundColor(softBlue)
-                    .offset(y: 0.5),
-                alignment: .bottom
-            )
+            .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
         }
-        .padding()
+        .padding(16)
+        .background(Color.white)
         .sheet(isPresented: $showingEditSheet) {
             EditReplyView(
                 content: $replyViewModel.editedContent,
@@ -123,9 +172,7 @@ struct ReplyUser: View {
                 errorMessage: replyViewModel.errorMessage
             )
             .frame(minWidth: 400, minHeight: 200)
-            .onAppear {
-                replyViewModel.editedContent = reply.content
-            }
+
         }
         .alert("Delete Reply",
                isPresented: $showingDeleteAlert,
@@ -155,10 +202,10 @@ struct ReplyUser: View {
         Post(
             id: "abc123",
             userId: "123",
-            content: "This is a post.",
+            content: "This is a sample post content that demonstrates how the post looks in the reply view.",
             timestamp: Date(),
-            commentCount: 2,
-            likeCount: 2
+            commentCount: 5,
+            likeCount: 12
         )
     ]
 
@@ -167,11 +214,12 @@ struct ReplyUser: View {
             id: "1",
             userId: "1",
             postId: "abc123",
-            content: "This is a reply.",
+            content: "This is a sample reply content that shows how replies are displayed with the new design.",
             timestamp: Date()
         )
     )
     .environmentObject(replyVM)
     .environmentObject(postVM)
-    .frame(minWidth: 500, minHeight: 300)
+    .frame(minWidth: 600, minHeight: 400)
+    .background(Color.white)
 }

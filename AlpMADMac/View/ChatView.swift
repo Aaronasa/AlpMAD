@@ -46,6 +46,7 @@ struct ChatView: View {
                     }
                     .padding(.top)
                 }
+                .background(Color.white) // White background for ScrollView
                 .onChange(of: viewModel.messages.count) { _ in
                     // Auto-scroll to bottom on new message
                     withAnimation {
@@ -59,6 +60,8 @@ struct ChatView: View {
             HStack {
                 TextField("Type your message...", text: $messageText)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .foregroundColor(.black) // Text color when typing
+                    .accentColor(.black) // Cursor color
                     .focused($isTextFieldFocused)
                     .onTapGesture {
                         isTextFieldFocused = true
@@ -71,8 +74,9 @@ struct ChatView: View {
                 .disabled(messageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
             .padding()
-            .background(Color(.systemBackground))
+            .background(Color.white) // White background for input area
         }
+        .background(Color.white) // White background for entire VStack
         .onAppear {
             if !isPreview {
                 let currentUserId = Auth.auth().currentUser?.uid ?? ""

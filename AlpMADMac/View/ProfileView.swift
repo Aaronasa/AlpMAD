@@ -52,8 +52,6 @@ struct ProfileView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                // Enhanced Header with Profile Info
-                profileHeader
                 
                 // Beautiful Tab Bar
                 customTabBar
@@ -126,43 +124,6 @@ struct ProfileView: View {
         }
     }
     
-    var profileHeader: some View {
-        VStack(spacing: 16) {
-            // Profile Avatar
-            ZStack {
-                Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: [primaryBlue, accentBlue],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .frame(width: 80, height: 80)
-                    .shadow(color: primaryBlue.opacity(0.3), radius: 8, x: 0, y: 4)
-                
-                Image(systemName: "person.fill")
-                    .font(.system(size: 36, weight: .medium))
-                    .foregroundColor(.white)
-            }
-            
-            // User Info
-            VStack(spacing: 4) {
-                Text(authViewModel.myUser.email)
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                    .foregroundColor(textColor)
-                
-                Text("Age: \(authViewModel.myUser.age)")
-                    .font(.subheadline)
-                    .foregroundColor(secondaryTextColor)
-            }
-        }
-        .padding(.top, 20)
-        .padding(.bottom, 24)
-        .background(cardBackground)
-    }
-    
     var customTabBar: some View {
         HStack(spacing: 0) {
             ForEach(UpdateType.allCases) { type in
@@ -172,9 +133,6 @@ struct ProfileView: View {
                     }
                 }) {
                     VStack(spacing: 8) {
-                        Image(systemName: type.icon)
-                            .font(.system(size: 18, weight: .medium))
-                        
                         Text(type.title)
                             .font(.system(size: 14, weight: .medium))
                     }

@@ -5,19 +5,6 @@
 //  Created by Aaron Asa Soelistiono on 22/05/25.
 //
 
-//
-//  PostCardUser.swift
-//  AlpMAD
-//
-//  Created by Aaron Asa Soelistiono on 22/05/25.
-//
-//
-//  PostCardUser.swift
-//  AlpMAD
-//
-//  Created by Aaron Asa Soelistiono on 22/05/25.
-//
-
 import SwiftUI
 
 struct PostCardUser: View {
@@ -28,6 +15,8 @@ struct PostCardUser: View {
     @State private var showingDeleteAlert = false
     @State private var editedContent = ""
     @State private var isHovered = false
+    @State private var showingPopover = false
+    @State private var showingCustomMenu = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -45,28 +34,49 @@ struct PostCardUser: View {
                 
                 Spacer()
                 
-                Menu {
-                    Button(action: {
-                        editedContent = post.content
-                        showingEditSheet = true
-                    }) {
-                        Label("Edit", systemImage: "")
-                    }
-                    
-                    Divider()
-                    
-                    Button(role: .destructive, action: {
-                        showingDeleteAlert = true
-                    }) {
-                        Label("Delete", systemImage: "")
-                    }
-                } label: {
-                    Image(systemName: "ellipsis.circle")
-                        .font(.system(size: 16))
-                        .foregroundColor(.gray)
+                Button(action: {
+                    showingPopover.toggle()
+                }) {
+                    Image(systemName: "ellipsis")
+                        .foregroundColor(.black)
                 }
-                .menuStyle(.borderlessButton)
-                .frame(width: 24, height: 24)
+                .popover(isPresented: $showingPopover, arrowEdge: .bottom) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        Button(action: {
+                            editedContent = post.content
+                            showingEditSheet = true
+                            showingPopover = false
+                        }) {
+                            HStack {
+                                Text("Edit")
+                                Spacer()
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                        }
+                        .buttonStyle(.plain)
+                        .contentShape(Rectangle())
+                        
+                        Divider()
+                        
+                        Button(action: {
+                            showingDeleteAlert = true
+                            showingPopover = false
+                        }) {
+                            HStack {
+                                Text("Delete")
+                                Spacer()
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .foregroundColor(.red)
+                        }
+                        .buttonStyle(.plain)
+                        .contentShape(Rectangle())
+                    }
+                    .frame(width: 120)
+                    .background(Color(NSColor.controlBackgroundColor))
+                }
             }
             
             // Content
@@ -148,17 +158,14 @@ struct PostCardUser: View {
 }
 
 #Preview {
-    VStack(spacing: 0) {
-        PostCardUser(post: Post(
-            id: "1",
-            userId: "",
-            content: "This is my own post that I can edit and delete. Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-            timestamp: Date(),
-            commentCount: 5,
-            likeCount: 12,
-            likedByCurrentUser: false
-        ))
-    }
+    PostCardUser(post: Post(
+        id: "1",
+        userId: "",
+        content: "Example post content",
+        timestamp: Date(),
+        commentCount: 0,
+        likeCount: 3,
+        likedByCurrentUser: false
+    ))
     .environmentObject(PostViewModel())
-    .frame(width: 600)
 }

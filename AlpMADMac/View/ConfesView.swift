@@ -19,6 +19,7 @@ struct ConfesView: View {
     @EnvironmentObject var postViewModel: PostViewModel
     @EnvironmentObject var replyViewModel: ReplyViewModel
     @EnvironmentObject var authViewModel: AuthViewModel
+    @StateObject private var chatViewModel = ChatViewModel()
 
     var body: some View {
         NavigationStack {
@@ -35,9 +36,11 @@ struct ConfesView: View {
                     Spacer()
 
                     HStack(spacing: 16) {
-                        Button(action: {
-                            // Chat/Messages action
-                        }) {
+                        NavigationLink(
+                            destination: ListUserChatView()
+                                .environmentObject(authViewModel)
+                                .environmentObject(chatViewModel)
+                        ) {
                             Image(systemName: "bubble.right")
                                 .font(.system(size: 18))
                                 .foregroundColor(primaryBlue)
@@ -147,8 +150,9 @@ struct ConfesView: View {
                         }
                     }
                 }
+                .background(Color.white)
             }
-            .background(Color(NSColor.windowBackgroundColor))
+            .background(Color.white)
             .alert("Gagal Memposting", isPresented: $showErrorAlert) {
                 Button("OK") {
                     postViewModel.postError = nil
