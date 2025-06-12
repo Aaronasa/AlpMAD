@@ -1,10 +1,3 @@
-//
-//  ChatView.swift
-//  AlpMAD
-//
-//  Created by student on 30/05/25.
-//
-
 import SwiftUI
 import FirebaseAuth
 
@@ -45,7 +38,6 @@ struct ChatView: View {
                     .padding(.top)
                 }
                 .onChange(of: viewModel.messages.count) { _ in
-                    // Auto-scroll to bottom on new message
                     withAnimation {
                         scrollViewProxy.scrollTo(viewModel.messages.count - 1, anchor: .bottom)
                     }
@@ -71,13 +63,16 @@ struct ChatView: View {
             .padding()
             .background(Color(.systemBackground))
         }
+        .frame(maxWidth: 700) // ✅ batas maksimal lebar konten
+        .padding(.horizontal, 20) // ✅ padding kiri-kanan biar tidak mepet
+        .padding(.vertical, 10)
         .onAppear {
             if !isPreview {
                 let currentUserId = Auth.auth().currentUser?.uid ?? ""
                 viewModel.observeMessages(from: currentUserId, to: receiverId)
             }
         }
-         .alert(item: $viewModel.chatError) { error in
+        .alert(item: $viewModel.chatError) { error in
             Alert(title: Text("Peringatan"),
                   message: Text(error.value),
                   dismissButton: .default(Text("OK")) {
@@ -95,8 +90,10 @@ struct ChatView: View {
         guard !trimmedText.isEmpty else { return }
 
         viewModel.sendMessage(to: receiverId, messageText: trimmedText)
-        messageText = ""
-        isTextFieldFocused = false // Dismiss keyboard after sending
+        if viewModel.chatError == nil {
+            messageText = ""
+            isTextFieldFocused = false
+        }
     }
 }
 
@@ -132,5 +129,5 @@ struct IdentifiableString: Identifiable {
     mockViewModel.messages = messages
 
     return ChatView(viewModel: mockViewModel, receiverId: otherUserId)
+        .frame(width: 1000, height: 700) // ✅ Ukuran preview di macOS
 }
-
